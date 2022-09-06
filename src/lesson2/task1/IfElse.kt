@@ -1,9 +1,8 @@
-@file:Suppress("UNUSED_PARAMETER")
+@file:Suppress("Артём Вагнер 3530901/20003")
 
 package lesson2.task1
 
 import lesson1.task1.discriminant
-import lesson1.task1.lengthInMeters
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.pow

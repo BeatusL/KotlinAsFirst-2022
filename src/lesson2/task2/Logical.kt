@@ -1,4 +1,4 @@
-@file:Suppress("UNUSED_PARAMETER")
+@file:Suppress("Артём Вагнер 3530901/20003")
 
 package lesson2.task2
 
@@ -28,7 +28,8 @@ fun isNumberHappy(number: Int): Boolean = (number % 10 + number % 100 / 10 == nu
  * Определить, угрожают ли они друг другу. Вернуть true, если угрожают.
  * Считать, что ферзи не могут загораживать друг друга.
  */
-fun queenThreatens(x1: Int, y1: Int, x2: Int, y2: Int): Boolean = (x1 == x2) || (y1 == y2) || (x1 - x2 == y1 - y2) || (x1 - x2 == y2 - y1)
+fun queenThreatens(x1: Int, y1: Int, x2: Int, y2: Int): Boolean =
+    (x1 == x2) || (y1 == y2) || (x1 - x2 == y1 - y2) || (x1 - x2 == y2 - y1)
 
 
 /**
@@ -68,5 +69,5 @@ fun circleInside(
 fun brickPasses(a: Int, b: Int, c: Int, r: Int, s: Int): Boolean {
     val minb = minOf(a, b, c)
     val midb = a + b + c - minb - maxOf(a, b, c)
-    return (minb <= minOf(r, s) && midb <= maxOf(r, s))
+    return minb <= minOf(r, s) && midb <= maxOf(r, s)
 }
