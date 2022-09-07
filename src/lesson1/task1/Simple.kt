@@ -1,4 +1,4 @@
-@file:Suppress("Артём Вагнер 3530901/20003")
+@file:Suppress("UNUSED_PARAMETER")
 
 package lesson1.task1
 
