@@ -307,20 +307,26 @@ fun cos(x: Double, eps: Double): Double {
  * Использовать операции со строками в этой задаче запрещается.
  */
 fun squareSequenceDigit(n: Int): Int {
-    var count = 0.0
-    var l = 0
-    var curnumb = 0.0
-    var curl = 1
+    var left = n
+    var count = 0
+    var curnumb = 0
     do {
         count ++
-        curl = 1
-        curnumb = count.pow(2)
-        while (curnumb % curl < curnumb) {
-            curl = curl * 10
-            l ++
-        }
-    } while (n - l > 0)
-    return (curnumb / (10.0).pow(-1 * (n-l)) % 10).toInt()
+        curnumb = count * count
+        left -= CountDigits(curnumb)
+    } while (left > 0)
+    while (left < 0) {
+        curnumb /= 10
+        left ++
+    }
+    return curnumb % 10
+}
+fun CountDigits(x: Int): Int {
+    var res = 1
+    while (x / (10.0.pow(res)).toInt() > 0) {
+        res ++
+    }
+    return res
 }
 
 /**
@@ -343,13 +349,13 @@ fun fibSequenceDigit(n: Int): Int {
         do {
             curl = 1
             curnumb = dig1 + dig2
-            while (curnumb % curl < curnumb) {
+            while (curnumb / curl != 0) {
                 curl = curl * 10
                 l++
             }
             dig1 = dig2
             dig2 = curnumb
         } while (n - 2 - l > 0)
-        return (curnumb / (10.0).pow(-1 * (n - 2 - l)) % 10).toInt()
+        return (curnumb / ( (10.0).pow(-1 * (n - 2 - l)) ).toInt() % 10)
     }
 }
