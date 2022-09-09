@@ -339,23 +339,17 @@ fun CountDigits(x: Int): Int {
  * Использовать операции со строками в этой задаче запрещается.
  */
 fun fibSequenceDigit(n: Int): Int {
-    if (n < 3) return 1
-    else {
-        var dig1 = 1
-        var dig2 = 1
-        var l = 0
-        var curnumb = 0
-        var curl = 1
-        do {
-            curl = 1
-            curnumb = dig1 + dig2
-            while (curnumb / curl != 0) {
-                curl = curl * 10
-                l++
-            }
-            dig1 = dig2
-            dig2 = curnumb
-        } while (n - 2 - l > 0)
-        return (curnumb / ( (10.0).pow(-1 * (n - 2 - l)) ).toInt() % 10)
+    var left = n
+    var count = 0
+    var curnumb = 0
+    do {
+        count++
+        curnumb = fib(count)
+        left -= CountDigits(curnumb)
+    } while (left > 0)
+    while (left < 0) {
+        curnumb /= 10
+        left++
     }
+    return curnumb % 10
 }
