@@ -98,7 +98,7 @@ fun fib(n: Int): Int {
     var mid = 0
     for (k in 3..n) {
         mid = fib2
-        fib2 += fib1               //в Котлин есть двойное присваивание типа (a, b = b, a)?
+        fib2 += fib1
         fib1 = mid
     }
     return fib2
@@ -110,11 +110,14 @@ fun fib(n: Int): Int {
  * Для заданного числа n > 1 найти минимальный делитель, превышающий 1
  */
 fun minDivisor(n: Int): Int {
-    var k = 2
-    while (n % k != 0) {
-        k ++
+    var ans = n
+    for (k in 2..sqrt(n.toDouble()).toInt()) {
+        if (n % k == 0) {
+            ans = k
+            break
+        }
     }
-    return k
+    return ans
 }
 
 /**
@@ -164,9 +167,13 @@ fun collatzSteps(x: Int): Int {
  * минимальное число k, которое делится и на m и на n без остатка
  */
 fun lcm(m: Int, n: Int): Int {
-    var k = maxOf(m, n)
-    while (k % m != 0 || k % n != 0) { k++ }
-    return k
+    var x = m
+    var y = n
+    while (x * y > 0) {
+        if (x > y) x %= y
+        else y %= x
+    }
+    return maxOf(m, n) / (x + y) * minOf(m, n)
 }
 
 /**
@@ -264,7 +271,7 @@ fun sin(x: Double, eps: Double): Double {
         sin += ln
         c++
         curfact *= (c * 2.0 - 1.0) * (c * 2.0 - 2.0)
-    } while (abs(ln) > eps)
+    } while (abs(ln) >= eps)
     return sin
 }
 
@@ -290,11 +297,12 @@ fun cos(x: Double, eps: Double): Double {
     }
     inp *= PI
     do {
-        ln = (-1.0).pow(c + 1) * inp.pow(c * 2.0 - 2) / curfact
+        ln = (-1.0).pow(c - 1) * inp.pow(c * 2.0 - 2) / curfact
         cs += ln
         c++
         curfact *= (c * 2.0 - 2) * (c * 2.0 - 3)
-    } while (abs(ln) > eps)
+        println(ln)
+    } while (abs(ln) >= eps)
     return cs
 }
 /**

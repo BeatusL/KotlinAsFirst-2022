@@ -30,7 +30,7 @@ fun isNumberHappy(number: Int): Boolean =
  * Считать, что ферзи не могут загораживать друг друга.
  */
 fun queenThreatens(x1: Int, y1: Int, x2: Int, y2: Int): Boolean =
-    (x1 == x2) || (y1 == y2) || (x1 - x2 == y1 - y2) || (x1 - x2 == y2 - y1)
+    x1 == x2 || y1 == y2 || x1 - x2 == y1 - y2 || x1 - x2 == y2 - y1
 
 
 /**
