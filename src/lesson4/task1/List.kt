@@ -261,13 +261,15 @@ fun factorizeToString(n: Int): String {
  * например: n = 100, base = 4 -> (1, 2, 1, 0) или n = 250, base = 14 -> (1, 3, 12)
  */
 fun convert(n: Int, base: Int): List<Int> {
-    var lst = listOf<Int>()
-    var numb = n
-    while (numb > 0) {
-        lst += numb % base
-        numb /= base
-    }
-    return lst.reversed()
+    if (n > 0) {
+        var lst = listOf<Int>()
+        var numb = n
+        while (numb > 0) {
+            lst += numb % base
+            numb /= base
+        }
+        return lst.reversed()
+    } else return listOf(0)
 }
 
 /**
@@ -282,15 +284,16 @@ fun convert(n: Int, base: Int): List<Int> {
  * (например, n.toString(base) и подобные), запрещается.
  */
 fun convertToString(n: Int, base: Int): String {
-    var str = ""
-    var numb = n
-    while (numb > 0) {
-        val res = numb % base
-        str = if (res >= 10) (87 + res).toChar() + str else res.toString() + str
-        numb /= base
-    }
-    return str
-
+    if (n > 0) {
+        var str = ""
+        var numb = n
+        while (numb > 0) {
+            val res = numb % base
+            str = if (res >= 10) (87 + res).toChar() + str else res.toString() + str
+            numb /= base
+        }
+        return str
+    } else return "0"
 }
 
 /**
@@ -300,7 +303,15 @@ fun convertToString(n: Int, base: Int): String {
  * из системы счисления с основанием base в десятичную.
  * Например: digits = (1, 3, 12), base = 14 -> 250
  */
-fun decimal(digits: List<Int>, base: Int): Int = TODO()
+fun decimal(digits: List<Int>, base: Int): Int {
+    var res = 0.0
+    var c = digits.size - 1
+    for (element in digits) {
+        res += element * base.toDouble().pow(c)
+        c --
+    }
+    return res.toInt()
+}
 
 /**
  * Сложная (4 балла)
@@ -314,7 +325,16 @@ fun decimal(digits: List<Int>, base: Int): Int = TODO()
  * Использовать функции стандартной библиотеки, напрямую и полностью решающие данную задачу
  * (например, str.toInt(base)), запрещается.
  */
-fun decimalFromString(str: String, base: Int): Int = TODO()
+fun decimalFromString(str: String, base: Int): Int {
+    var res = 0.0
+    var c = str.length - 1
+    for (i in 0 until str.length) {
+        res = if (str[i].code <= 57) res + (str[i].toInt() - 48) * base.toDouble().pow(c)
+        else res + (str[i].code - 87) * base.toDouble().pow(c)
+        c--
+    }
+    return res.toInt()
+}
 
 /**
  * Сложная (5 баллов)
@@ -324,7 +344,32 @@ fun decimalFromString(str: String, base: Int): Int = TODO()
  * 90 = XC, 100 = C, 400 = CD, 500 = D, 900 = CM, 1000 = M.
  * Например: 23 = XXIII, 44 = XLIV, 100 = C
  */
-fun roman(n: Int): String = TODO()
+fun roman(n: Int): String {
+    val TSD = listOf("C", "CC", "CCC", "CD", "D", "DC", "DCC", "DCCC", "CM")
+    val TFD = listOf("X", "XX", "XXX", "XL", "L", "LX", "LXX", "LXXX", "XC")
+    val TZD = listOf("I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX")
+    var number = n
+    var res = ""
+    if (number > 1000) {
+        val c = number / 1000
+        res += "M".repeat(c)
+        number %= 1000
+    }
+    if (number > 100) {
+        val c = number / 100
+        res += TSD[c-1]
+        number %= 100
+    }
+    if (number > 10) {
+        val c = number / 10
+        res += TFD[c-1]
+        number %= 10
+    }
+    if (number > 0) {
+        res += TZD[number-1]
+    }
+    return res
+}
 
 /**
  * Очень сложная (7 баллов)
