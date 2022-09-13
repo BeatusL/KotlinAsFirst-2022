@@ -350,21 +350,21 @@ fun roman(n: Int): String {
     val TZD = listOf("I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX")
     var number = n
     var res = ""
-    if (number > 1000) {
+    if (number >= 1000) {
         val c = number / 1000
         res += "M".repeat(c)
-        number %= 1000
     }
-    if (number > 100) {
+    number %= 1000
+    if (number >= 100) {
         val c = number / 100
         res += TSD[c-1]
-        number %= 100
     }
-    if (number > 10) {
+    number %= 100
+    if (number >= 10) {
         val c = number / 10
         res += TFD[c-1]
-        number %= 10
     }
+    number %= 10
     if (number > 0) {
         res += TZD[number-1]
     }
