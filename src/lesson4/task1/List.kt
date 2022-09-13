@@ -399,6 +399,6 @@ fun russian(n: Int): String {
             else -> res += "тысяч "
         }
     }
-    res = if (n / 10 % 10 == 1) res + dth[n / 100 % 10] + doto[n % 100] else res + dth[n / 100 % 10] + dtw[n / 10 % 10] + doto[n % 10]
+    res = if (n / 10 % 10 < 2) res + dth[n / 100 % 10] + doto[n % 100] else res + dth[n / 100 % 10] + dtw[n / 10 % 10] + doto[n % 10]
     return res.trim()
 }
