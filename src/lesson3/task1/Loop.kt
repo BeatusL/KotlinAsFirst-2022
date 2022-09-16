@@ -110,14 +110,12 @@ fun fib(n: Int): Int {
  * Для заданного числа n > 1 найти минимальный делитель, превышающий 1
  */
 fun minDivisor(n: Int): Int {
-    var ans = n
     for (k in 2..sqrt(n.toDouble()).toInt()) {
         if (n % k == 0) {
-            ans = k
-            break
+            return k
         }
     }
-    return ans
+    return n
 }
 
 /**
@@ -126,11 +124,10 @@ fun minDivisor(n: Int): Int {
  * Для заданного числа n > 1 найти максимальный делитель, меньший n
  */
 fun maxDivisor(n: Int): Int {
-    var k = n - 1
-    while (n % k != 0) {
-        k --
+    for (k in (n-1) downTo  sqrt(n.toDouble()).toInt()) {
+        if (n % k == 0) return k
     }
-    return k
+    return 1
 }
 
 
@@ -151,10 +148,10 @@ fun maxDivisor(n: Int): Int {
  * этого для какого-либо начального X > 0.
  */
 fun collatzSteps(x: Int): Int {
-    var X = x
+    var n = x
     var count = 0
-    while (X > 1) {
-        X = if (X % 2 == 0) X / 2 else 3 * X + 1
+    while (n > 1) {
+        n = if (n % 2 == 0) n / 2 else 3 * n + 1
         count ++
     }
     return count
@@ -184,10 +181,13 @@ fun lcm(m: Int, n: Int): Int {
  * Например, 25 и 49 взаимно простые, а 6 и 8 -- нет.
  */
 fun isCoPrime(m: Int, n: Int): Boolean {
-    for (i in 2..minOf(m, n)){
-        if (m % i == 0 && n % i == 0) return false
+    var x = m
+    var y = n
+    while (x * y != 0) {
+        if (x > y) x %= y
+        else y %= x
     }
-    return true
+    return x + y == 1
 }
 
 /**
@@ -216,15 +216,7 @@ fun revert(n: Int): Int {
  *
  * Использовать операции со строками в этой задаче запрещается.
  */
-fun isPalindrome(n: Int): Boolean {
-    var ante = n
-    var post = 0
-    while (ante > 0) {
-        post = 10 * post + ante % 10
-        ante /= 10
-    }
-    return post == n
-}
+fun isPalindrome(n: Int): Boolean = n == revert(n)
 
 /**
  * Средняя (3 балла)
@@ -258,14 +250,11 @@ fun sin(x: Double, eps: Double): Double {
     var c = 1.0
     var ln = 0.0
     var curfact = 1.0
-    var inp = x / PI
-    if (inp % 2 == 0.0) {
-        inp = 0.0
+    var inp = x
+    if (inp % 2 == 0.0) inp = 0.0
+    else while (inp > 2 * PI) {
+        inp -= 2 * PI
     }
-    else while (inp > 2) {
-        inp -= 2
-    }
-    inp *= PI
     do {
         ln = (-1.0).pow(c + 1) * inp.pow(c * 2.0 - 1.0) / curfact
         sin += ln
@@ -289,19 +278,16 @@ fun cos(x: Double, eps: Double): Double {
     var c = 1.0
     var ln = 0.0
     var curfact = 1.0
-    var inp = x / PI
-    if (inp % 2 == 0.0) {
-        inp = 0.0
-    } else while (inp > 2) {
-        inp -= 2
+    var inp = x
+    if (inp % 2 == 0.0) inp = 0.0
+    else while (inp > 2 * PI) {
+        inp -= 2 * PI
     }
-    inp *= PI
     do {
         ln = (-1.0).pow(c - 1) * inp.pow(c * 2.0 - 2) / curfact
         cs += ln
         c++
         curfact *= (c * 2.0 - 2) * (c * 2.0 - 3)
-        println(ln)
     } while (abs(ln) >= eps)
     return cs
 }
@@ -321,7 +307,7 @@ fun squareSequenceDigit(n: Int): Int {
     do {
         count ++
         curnumb = count * count
-        left -= CountDigits(curnumb)
+        left -= curnumb.toString().length
     } while (left > 0)
     while (left < 0) {
         curnumb /= 10
@@ -329,13 +315,7 @@ fun squareSequenceDigit(n: Int): Int {
     }
     return curnumb % 10
 }
-fun CountDigits(x: Int): Int {
-    var res = 1
-    while (x / (10.0.pow(res)).toInt() > 0) {
-        res ++
-    }
-    return res
-}
+
 
 /**
  * Сложная (5 баллов)
@@ -353,7 +333,7 @@ fun fibSequenceDigit(n: Int): Int {
     do {
         count++
         curnumb = fib(count)
-        left -= CountDigits(curnumb)
+        left -= curnumb.toString().length
     } while (left > 0)
     while (left < 0) {
         curnumb /= 10
