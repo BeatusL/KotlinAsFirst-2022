@@ -6,6 +6,8 @@ import kotlin.math.PI
 import kotlin.math.sqrt
 import kotlin.math.pow
 import kotlin.math.abs
+import kotlin.math.sin
+import kotlin.math.cos
 
 
 // Урок 3: циклы
@@ -76,15 +78,7 @@ fun digitCountInNumber(n: Int, m: Int): Int =
  *
  * Использовать операции со строками в этой задаче запрещается.
  */
-fun digitNumber(n: Int): Int {
-    var number = n
-    var count = 0
-    do {
-        number /= 10
-        count ++
-    } while (number > 0)
-    return count
-}
+fun digitNumber(n: Int): Int = n.toString().count()
 
 /**
  * Простая (2 балла)
@@ -95,9 +89,8 @@ fun digitNumber(n: Int): Int {
 fun fib(n: Int): Int {
     var fib1 = 1
     var fib2 = 1
-    var mid = 0
     for (k in 3..n) {
-        mid = fib2
+        val mid = fib2
         fib2 += fib1
         fib1 = mid
     }
@@ -246,22 +239,18 @@ fun hasDifferentDigits(n: Int): Boolean {
  * Использовать kotlin.math.sin и другие стандартные реализации функции синуса в этой задаче запрещается.
  */
 fun sin(x: Double, eps: Double): Double {
-    var sin = 0.0
-    var c = 1.0
-    var ln = 0.0
-    var curfact = 1.0
-    var inp = x
-    if (inp % 2 == 0.0) inp = 0.0
-    else while (inp > 2 * PI) {
-        inp -= 2 * PI
-    }
+    var curSin: Double = 0.0
+    var count = 1.0
+    var lastMember: Double = 0.0
+    var curFact = 1.0
+    var inp = x % (2 * PI)
     do {
-        ln = (-1.0).pow(c + 1) * inp.pow(c * 2.0 - 1.0) / curfact
-        sin += ln
-        c++
-        curfact *= (c * 2.0 - 1.0) * (c * 2.0 - 2.0)
-    } while (abs(ln) >= eps)
-    return sin
+        lastMember = (-1.0).pow(count + 1) * inp.pow(count * 2.0 - 1.0) / curFact
+        curSin += lastMember
+        count++
+        curFact *= (count * 2.0 - 1.0) * (count * 2.0 - 2.0)
+    } while (abs(curSin - sin(inp)) >= eps)
+    return curSin
 }
 
 /**
@@ -274,23 +263,20 @@ fun sin(x: Double, eps: Double): Double {
  * Использовать kotlin.math.cos и другие стандартные реализации функции косинуса в этой задаче запрещается.
  */
 fun cos(x: Double, eps: Double): Double {
-    var cs = 0.0
-    var c = 1.0
-    var ln = 0.0
-    var curfact = 1.0
-    var inp = x
-    if (inp % 2 == 0.0) inp = 0.0
-    else while (inp > 2 * PI) {
-        inp -= 2 * PI
-    }
+    var curCos: Double = 0.0
+    var count = 1.0
+    var lastMember: Double = 0.0
+    var curFact = 1.0
+    var inp = x % (2 * PI)
     do {
-        ln = (-1.0).pow(c - 1) * inp.pow(c * 2.0 - 2) / curfact
-        cs += ln
-        c++
-        curfact *= (c * 2.0 - 2) * (c * 2.0 - 3)
-    } while (abs(ln) >= eps)
-    return cs
+        lastMember = (-1.0).pow(count - 1) * inp.pow(count * 2.0 - 2) / curFact
+        curCos += lastMember
+        count++
+        curFact *= (count * 2.0 - 2) * (count * 2.0 - 3)
+    } while (abs(curCos - cos(inp)) >= eps)
+    return curCos
 }
+
 /**
  * Сложная (4 балла)
  *
