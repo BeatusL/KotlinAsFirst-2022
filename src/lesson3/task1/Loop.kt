@@ -263,17 +263,17 @@ fun sin(x: Double, eps: Double): Double {
  * Использовать kotlin.math.cos и другие стандартные реализации функции косинуса в этой задаче запрещается.
  */
 fun cos(x: Double, eps: Double): Double {
-    var curCos: Double = 0.0
-    var count = 1.0
-    var lastMember: Double = 0.0
-    var curFact = 1.0
+    var curCos = 0.0
+    var count = 0
+    var power = 2
+    var lastMember: Double
     var inp = x % (2 * PI)
     do {
-        lastMember = (-1.0).pow(count - 1) * inp.pow(count * 2.0 - 2) / curFact
+        lastMember = (-1.0).pow(power) * inp.pow(count) / factorial(count)
         curCos += lastMember
-        count++
-        curFact *= (count * 2.0 - 2) * (count * 2.0 - 3)
-    } while (abs(curCos - cos(inp)) >= eps)
+        count += 2
+        power += 1
+    } while (abs(lastMember) > eps)
     return curCos
 }
 

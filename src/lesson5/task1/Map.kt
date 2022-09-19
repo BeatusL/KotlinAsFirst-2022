@@ -281,11 +281,15 @@ fun extractRepeats(list: List<String>): Map<String, Int> {
  *   hasAnagrams(listOf("тор", "свет", "рот")) -> true
  */
 fun hasAnagrams(words: List<String>): Boolean {
-    val s = mutableSetOf<Set>()
-    for (element in words) {
-        s.add(element.toSet())
+    if (words.isEmpty()) return false
+    for (i in 0 until words.size) {
+        for (j in 0 until words.size) {
+            val word1 = words[i]
+            val word2 = words[j]
+            if (i != j && word1.toSet() == word2.toSet() && word1.length == word2.length) return true
+        }
     }
-    return s
+    return false
 }
 
 /**
@@ -322,7 +326,10 @@ fun hasAnagrams(words: List<String>): Boolean {
  *          "GoodGnome" to setOf()
  *        )
  */
-fun propagateHandshakes(friends: Map<String, Set<String>>): Map<String, Set<String>> = TODO()
+fun propagateHandshakes(friends: Map<String, Set<String>>): Map<String, Set<String>> {
+    val ans = mutableMapOf<String, Set<String>>()
+    return ans
+}
 
 /**
  * Сложная (6 баллов)
