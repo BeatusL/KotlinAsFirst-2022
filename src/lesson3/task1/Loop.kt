@@ -113,9 +113,7 @@ fun fib(n: Int): Int {
  */
 fun minDivisor(n: Int): Int {
     for (k in 2..sqrt(n.toDouble()).toInt()) {
-        if (n % k == 0) {
-            return k
-        }
+        if (n % k == 0) return k
     }
     return n
 }
