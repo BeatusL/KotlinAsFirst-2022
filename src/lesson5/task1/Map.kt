@@ -328,9 +328,38 @@ fun hasAnagrams(words: List<String>): Boolean {
  */
 fun propagateHandshakes(friends: Map<String, Set<String>>): Map<String, Set<String>> {
     val ans = mutableMapOf<String, Set<String>>()
+    val setOfFriends = mutableSetOf<String>()
+    val lastSet = mutableSetOf<String>()
+    val curSet = mutableSetOf<String>()
+    val set = mutableSetOf<String>()
+    for ((key, value) in friends) {
+        set.add(key)
+        for (element in value) set.add(element)
+    }
+    for (element in set) {
+        if (friends[element] != null) {
+            setOfFriends.clear()
+            lastSet.clear()
+            setOfFriends.addAll(friends[element]!!)
+            lastSet.addAll(friends[element]!!)
+            do {
+                val friendC = setOfFriends.size
+                for (friend in lastSet) {
+                    if (friends[friend] != null) {
+                        setOfFriends.addAll(friends[friend]!!)
+                        curSet.addAll(friends[friend]!!)
+                    }
+                }
+                lastSet.clear()
+                lastSet.addAll(curSet)
+                curSet.clear()
+            } while (setOfFriends.size > friendC)
+            setOfFriends.remove(element)
+            ans[element] = setOfFriends.toSet()
+        } else ans[element] = setOf()
+    }
     return ans
 }
-
 /**
  * Сложная (6 баллов)
  *

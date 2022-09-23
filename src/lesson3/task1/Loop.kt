@@ -80,7 +80,7 @@ fun digitCountInNumber(n: Int, m: Int): Int =
  */
 fun digitNumber(n: Int): Int {
     if (n == 0) return 1
-    var x = n
+    var x = abs(n)
     var c = 0
     while (x > 0) {
         x /= 10
