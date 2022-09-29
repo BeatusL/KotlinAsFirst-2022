@@ -112,7 +112,8 @@ fun fib(n: Int): Int {
  * Для заданного числа n > 1 найти минимальный делитель, превышающий 1
  */
 fun minDivisor(n: Int): Int {
-    for (k in 2..sqrt(n.toDouble()).toInt()) {
+    if (n % 2 == 0) return 2
+    for (k in 3..sqrt(n.toDouble()).toInt() step 2) {
         if (n % k == 0) return k
     }
     return n
@@ -124,7 +125,8 @@ fun minDivisor(n: Int): Int {
  * Для заданного числа n > 1 найти максимальный делитель, меньший n
  */
 fun maxDivisor(n: Int): Int {
-    for (k in (n-1) downTo  sqrt(n.toDouble()).toInt()) {
+    if (n % 2 == 0) return n / 2
+    for (k in (n / 2 * 2 - 1) downTo  sqrt(n.toDouble()).toInt() step 2) {
         if (n % k == 0) return k
     }
     return 1
@@ -163,14 +165,16 @@ fun collatzSteps(x: Int): Int {
  * Для заданных чисел m и n найти наименьшее общее кратное, то есть,
  * минимальное число k, которое делится и на m и на n без остатка
  */
-fun lcm(m: Int, n: Int): Int {
+fun lcm(m: Int, n: Int): Int = maxOf(m, n) / GrComDiv(m, n) * minOf(m, n)
+
+fun GrComDiv(m: Int, n: Int): Int {
     var x = m
     var y = n
-    while (x * y > 0) {
+    while (x * y != 0) {
         if (x > y) x %= y
         else y %= x
     }
-    return maxOf(m, n) / (x + y) * minOf(m, n)
+    return x + y
 }
 
 /**
@@ -180,15 +184,7 @@ fun lcm(m: Int, n: Int): Int {
  * Взаимно простые числа не имеют общих делителей, кроме 1.
  * Например, 25 и 49 взаимно простые, а 6 и 8 -- нет.
  */
-fun isCoPrime(m: Int, n: Int): Boolean {
-    var x = m
-    var y = n
-    while (x * y != 0) {
-        if (x > y) x %= y
-        else y %= x
-    }
-    return x + y == 1
-}
+fun isCoPrime(m: Int, n: Int): Boolean = GrComDiv(m, n) == 1
 
 /**
  * Средняя (3 балла)
@@ -248,11 +244,10 @@ fun hasDifferentDigits(n: Int): Boolean {
 fun sin(x: Double, eps: Double): Double {
     var curSin: Double = 0.0
     var count = 1.0
-    var lastMember: Double = 0.0
     var curFact = 1.0
     var inp = x % (2 * PI)
     do {
-        lastMember = (-1.0).pow(count + 1) * inp.pow(count * 2.0 - 1.0) / curFact
+        val lastMember: Double = (-1.0).pow(count + 1) * inp.pow(count * 2.0 - 1.0) / curFact
         curSin += lastMember
         count++
         curFact *= (count * 2.0 - 1.0) * (count * 2.0 - 2.0)
@@ -273,10 +268,9 @@ fun cos(x: Double, eps: Double): Double {
     var curCos = 0.0
     var count = 0
     var power = 2
-    var lastMember: Double
     var inp = x % (2 * PI)
     do {
-        lastMember = (-1.0).pow(power) * inp.pow(count) / factorial(count)
+        val lastMember: Double = (-1.0).pow(power) * inp.pow(count) / factorial(count)
         curCos += lastMember
         count += 2
         power += 1
@@ -300,7 +294,7 @@ fun squareSequenceDigit(n: Int): Int {
     do {
         count ++
         curnumb = count * count
-        left -= curnumb.toString().length
+        left -= digitNumber(curnumb)
     } while (left > 0)
     while (left < 0) {
         curnumb /= 10
@@ -326,9 +320,9 @@ fun fibSequenceDigit(n: Int): Int {
     do {
         count++
         curnumb = fib(count)
-        left -= curnumb.toString().length
+        left -= digitNumber(curnumb)
     } while (left > 0)
-    while (left < 0) {
+    while (left != 0) {
         curnumb /= 10
         left++
     }
