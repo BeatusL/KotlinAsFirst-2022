@@ -165,9 +165,9 @@ fun collatzSteps(x: Int): Int {
  * Для заданных чисел m и n найти наименьшее общее кратное, то есть,
  * минимальное число k, которое делится и на m и на n без остатка
  */
-fun lcm(m: Int, n: Int): Int = maxOf(m, n) / GrComDiv(m, n) * minOf(m, n)
+fun lcm(m: Int, n: Int): Int = maxOf(m, n) / grComDiv(m, n) * minOf(m, n)
 
-fun GrComDiv(m: Int, n: Int): Int {
+fun grComDiv(m: Int, n: Int): Int {
     var x = m
     var y = n
     while (x * y != 0) {
@@ -184,7 +184,7 @@ fun GrComDiv(m: Int, n: Int): Int {
  * Взаимно простые числа не имеют общих делителей, кроме 1.
  * Например, 25 и 49 взаимно простые, а 6 и 8 -- нет.
  */
-fun isCoPrime(m: Int, n: Int): Boolean = GrComDiv(m, n) == 1
+fun isCoPrime(m: Int, n: Int): Boolean = grComDiv(m, n) == 1
 
 /**
  * Средняя (3 балла)
@@ -242,12 +242,12 @@ fun hasDifferentDigits(n: Int): Boolean {
  * Использовать kotlin.math.sin и другие стандартные реализации функции синуса в этой задаче запрещается.
  */
 fun sin(x: Double, eps: Double): Double {
-    var curSin: Double = 0.0
+    var curSin = 0.0
     var count = 1.0
     var curFact = 1.0
     var inp = x % (2 * PI)
     do {
-        val lastMember: Double = (-1.0).pow(count + 1) * inp.pow(count * 2.0 - 1.0) / curFact
+        val lastMember = (-1.0).pow(count + 1) * inp.pow(count * 2.0 - 1.0) / curFact
         curSin += lastMember
         count++
         curFact *= (count * 2.0 - 1.0) * (count * 2.0 - 2.0)

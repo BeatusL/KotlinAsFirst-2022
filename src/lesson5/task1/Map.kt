@@ -2,6 +2,7 @@
 
 package lesson5.task1
 
+
 // Урок 5: ассоциативные массивы и множества
 // Максимальное количество баллов = 14
 // Рекомендуемое количество баллов = 9
@@ -244,7 +245,9 @@ fun findCheapestStuff(stuff: Map<String, Pair<String, Double>>, kind: String): S
  * Например:
  *   canBuildFrom(listOf('a', 'b', 'o'), "baobab") -> true
  */
-fun canBuildFrom(chars: List<Char>, word: String): Boolean = word.toSet().intersect(chars.toSet()) == word.toSet()
+fun canBuildFrom(chars: List<Char>, word: String): Boolean =
+    word.uppercase().toSet().union(chars.joinToString().uppercase().toSet()) ==
+            chars.joinToString().uppercase().toSet()
 
 /**
  * Средняя (4 балла)
@@ -360,6 +363,7 @@ fun propagateHandshakes(friends: Map<String, Set<String>>): Map<String, Set<Stri
     }
     return ans
 }
+
 /**
  * Сложная (6 баллов)
  *
@@ -377,7 +381,18 @@ fun propagateHandshakes(friends: Map<String, Set<String>>): Map<String, Set<Stri
  *   findSumOfTwo(listOf(1, 2, 3), 4) -> Pair(0, 2)
  *   findSumOfTwo(listOf(1, 2, 3), 6) -> Pair(-1, -1)
  */
-fun findSumOfTwo(list: List<Int>, number: Int): Pair<Int, Int> = TODO()
+fun findSumOfTwo(list: List<Int>, number: Int): Pair<Int, Int> {
+    for (i in 0 until list.size) {
+        val a = list[i]
+        val b = number - a
+        when {
+            b in list && a != b -> return Pair(i, list.indexOf(b))
+            b in list && list.count { it == a } > 1 ->
+                println(list.subList(list.indexOf(b) + 1, list.size).indexOf(b) + list.indexOf(b))//return Pair(min(i, list.subList(list.indexOf(b) + 1, list.size).indexOf(b)), max(i, list.subList(list.indexOf(b) + 1, list.size).indexOf(b)))
+        }
+    }
+    return TODO()
+}
 
 /**
  * Очень сложная (8 баллов)
