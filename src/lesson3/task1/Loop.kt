@@ -126,8 +126,8 @@ fun minDivisor(n: Int): Int {
  */
 fun maxDivisor(n: Int): Int {
     if (n % 2 == 0) return n / 2
-    for (k in (n / 2 * 2 - 1) downTo  sqrt(n.toDouble()).toInt() step 2) {
-        if (n % k == 0) return k
+    for (k in 3..sqrt(n.toDouble()).toInt() step 2) {
+        if (n % k == 0) return n / k
     }
     return 1
 }
