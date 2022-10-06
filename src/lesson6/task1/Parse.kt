@@ -87,7 +87,7 @@ fun dateStrToDigit(str: String): String {
         val parts = str.split(" ")
         if (parts.size != 3 || check(parts[0].toInt(), months[parts[1]], parts[2].toInt()))
             throw NumberFormatException()
-        return String.format("%02d.${months[parts[1]]}.%02d", parts[0].toInt(), parts[2].toInt())
+        return String.format("%02d.${months[parts[1]]}.${parts[2].toInt()}", parts[0].toInt())
     } catch (e: NumberFormatException) {
         return ""
     }

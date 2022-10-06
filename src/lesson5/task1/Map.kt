@@ -227,8 +227,8 @@ fun findCheapestStuff(stuff: Map<String, Pair<String, Double>>, kind: String): S
     var c = Double.MAX_VALUE
     for ((name, typePrice) in stuff) {
         val type = typePrice.toList().first()
-        val price: Double = typePrice.toList().last().toString().toDouble()
-        if (price < c && type == kind) {
+        val price = typePrice.toList().last().toString().toDouble()
+        if (price <= c && type == kind) {
             ans = name
             c = price
         }
@@ -246,8 +246,8 @@ fun findCheapestStuff(stuff: Map<String, Pair<String, Double>>, kind: String): S
  *   canBuildFrom(listOf('a', 'b', 'o'), "baobab") -> true
  */
 fun canBuildFrom(chars: List<Char>, word: String): Boolean =
-    word.uppercase().toSet().union(chars.joinToString().uppercase().toSet()) ==
-            chars.joinToString().uppercase().toSet()
+    word.uppercase().toSet().union(chars.joinToString("").uppercase().toSet()) ==
+            chars.joinToString("").uppercase().toSet()
 
 /**
  * Средняя (4 балла)
@@ -382,6 +382,7 @@ fun propagateHandshakes(friends: Map<String, Set<String>>): Map<String, Set<Stri
  *   findSumOfTwo(listOf(1, 2, 3), 6) -> Pair(-1, -1)
  */
 fun findSumOfTwo(list: List<Int>, number: Int): Pair<Int, Int> {
+    return TODO()
     for (i in 0 until list.size) {
         val a = list[i]
         val b = number - a
@@ -391,7 +392,6 @@ fun findSumOfTwo(list: List<Int>, number: Int): Pair<Int, Int> {
                 println(list.subList(list.indexOf(b) + 1, list.size).indexOf(b) + list.indexOf(b))//return Pair(min(i, list.subList(list.indexOf(b) + 1, list.size).indexOf(b)), max(i, list.subList(list.indexOf(b) + 1, list.size).indexOf(b)))
         }
     }
-    return TODO()
 }
 
 /**
