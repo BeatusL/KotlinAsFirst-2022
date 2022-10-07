@@ -156,7 +156,7 @@ fun flattenPhoneNumber(phone: String): String {
 fun chFlPhNum(phone: String, c: Int): Boolean {
     var n = c
     val nums = setOf('0', '1', '2', '3', '4', '5', '6', '7', '8', '9')
-    while (phone[n] != ')') {
+    while (phone[n] != ')' && n + 1 < phone.length) {
         n++
         if (phone[n] in nums) return false
     }
