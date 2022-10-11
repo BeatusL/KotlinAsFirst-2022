@@ -202,9 +202,9 @@ fun polynom(p: List<Int>, x: Int): Int {
  * Обратите внимание, что данная функция должна изменять содержание списка list, а не его копии.
  */
 fun accumulate(list: MutableList<Int>): MutableList<Int> {
-    if(list.isNotEmpty()) {
+    if (list.isNotEmpty()) {
         for (i in 1 until list.size) {
-            list[i] += list[i-1]
+            list[i] += list[i - 1]
         }
     }
     return list
@@ -218,7 +218,7 @@ fun accumulate(list: MutableList<Int>): MutableList<Int> {
  * Множители в списке должны располагаться по возрастанию.
  */
 fun factorize(n: Int): List<Int> {
-    var lst = listOf<Int>()
+    val lst = mutableListOf<Int>()
     var numb = n
     var c = 2
     while (numb > 1) {
@@ -245,7 +245,7 @@ fun factorizeToString(n: Int): String {
     var c = 2
     while (numb > 1) {
         if (numb % c == 0) {
-            str = if (str.length > 0) str + "*" + "$c" else "$c"
+            str = if (str.isNotEmpty()) "$str*$c" else "$c"
             numb /= c
             c = 2
         } else c++
@@ -262,7 +262,7 @@ fun factorizeToString(n: Int): String {
  */
 fun convert(n: Int, base: Int): List<Int> {
     if (n > 0) {
-        var lst = listOf<Int>()
+        val lst = mutableListOf<Int>()
         var numb = n
         while (numb > 0) {
             lst += numb % base
@@ -308,7 +308,7 @@ fun decimal(digits: List<Int>, base: Int): Int {
     var c = digits.size - 1
     for (element in digits) {
         res += element * base.toDouble().pow(c)
-        c --
+        c--
     }
     return res.toInt()
 }
@@ -328,9 +328,9 @@ fun decimal(digits: List<Int>, base: Int): Int {
 fun decimalFromString(str: String, base: Int): Int {
     var res = 0.0
     var c = str.length - 1
-    for (i in 0 until str.length) {
-        res = if (str[i].code <= 57) res + (str[i].toInt() - 48) * base.toDouble().pow(c)
-        else res + (str[i].code - 87) * base.toDouble().pow(c)
+    for (chr in str) {
+        res = if (chr.code <= 57) res + (chr.code - 48) * base.toDouble().pow(c)
+        else res + (chr.code - 87) * base.toDouble().pow(c)
         c--
     }
     return res.toInt()
@@ -345,9 +345,9 @@ fun decimalFromString(str: String, base: Int): Int {
  * Например: 23 = XXIII, 44 = XLIV, 100 = C
  */
 fun roman(n: Int): String {
-    val TSD = listOf("C", "CC", "CCC", "CD", "D", "DC", "DCC", "DCCC", "CM")
-    val TFD = listOf("X", "XX", "XXX", "XL", "L", "LX", "LXX", "LXXX", "XC")
-    val TZD = listOf("I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX")
+    val tsd = listOf("C", "CC", "CCC", "CD", "D", "DC", "DCC", "DCCC", "CM")
+    val tfd = listOf("X", "XX", "XXX", "XL", "L", "LX", "LXX", "LXXX", "XC")
+    val tzd = listOf("I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX")
     var number = n
     var res = ""
     if (number >= 1000) {
@@ -357,16 +357,16 @@ fun roman(n: Int): String {
     number %= 1000
     if (number >= 100) {
         val c = number / 100
-        res += TSD[c-1]
+        res += tsd[c - 1]
     }
     number %= 100
     if (number >= 10) {
         val c = number / 10
-        res += TFD[c-1]
+        res += tfd[c - 1]
     }
     number %= 10
     if (number > 0) {
-        res += TZD[number-1]
+        res += tzd[number - 1]
     }
     return res
 }
@@ -380,18 +380,27 @@ fun roman(n: Int): String {
  */
 fun russian(n: Int): String {
     var res = ""
-    val doto = listOf("", "один ", "два ", "три ", "четыре ", "пять ", "шесть ", "семь ", "восемь ", "девять ",
+    val doto = listOf(
+        "", "один ", "два ", "три ", "четыре ", "пять ", "шесть ", "семь ", "восемь ", "девять ",
         "десять ", "одиннадцать ", "двенадцать ", "тринадцать ", "четырнадцать ", "пятнадцать ",
-        "шестнадцать ", "семнадцать ", "восемнадцать ", "девятнадцать ")
-    val dott = listOf("", "одна ", "две ", "три ", "четыре ", "пять ", "шесть ", "семь ", "восемь ",
-        "девять ")
-    val dtw = listOf("", "десять ", "двадцать ", "тридцать ", "сорок ", "пятьдесят ", "шестьдесят ",
-        "семьдесят ", "восемьдесят ", "девяносто ")
-    val dth = listOf("", "сто ", "двести ", "триста ", "четыреста ", "пятьсот ", "шестьсот ", "семьсот ",
-        "восемьсот ", "девятьсот ")
+        "шестнадцать ", "семнадцать ", "восемнадцать ", "девятнадцать "
+    )
+    val dott = listOf(
+        "", "одна ", "две ", "три ", "четыре ", "пять ", "шесть ", "семь ", "восемь ",
+        "девять "
+    )
+    val dtw = listOf(
+        "", "десять ", "двадцать ", "тридцать ", "сорок ", "пятьдесят ", "шестьдесят ",
+        "семьдесят ", "восемьдесят ", "девяносто "
+    )
+    val dth = listOf(
+        "", "сто ", "двести ", "триста ", "четыреста ", "пятьсот ", "шестьсот ", "семьсот ",
+        "восемьсот ", "девятьсот "
+    )
 
-    if (n >= 1000){
-        res = if (n / 10000 % 10 == 1) res + dth[n / 100000] + doto[n / 1000 % 100] else res + dth[n / 100000] + dtw[n / 10000 % 10] + dott[n / 1000 % 10]
+    if (n >= 1000) {
+        res = if (n / 10000 % 10 == 1) res + dth[n / 100000] + doto[n / 1000 % 100]
+        else res + dth[n / 100000] + dtw[n / 10000 % 10] + dott[n / 1000 % 10]
         when {
             n / 1000 % 100 in 11..19 -> res += "тысяч "
             n / 1000 % 10 in 2..4 -> res += "тысячи "
@@ -399,6 +408,7 @@ fun russian(n: Int): String {
             else -> res += "тысяч "
         }
     }
-    res = if (n / 10 % 10 < 2) res + dth[n / 100 % 10] + doto[n % 100] else res + dth[n / 100 % 10] + dtw[n / 10 % 10] + doto[n % 10]
+    res = if (n / 10 % 10 < 2) res + dth[n / 100 % 10] + doto[n % 100]
+    else res + dth[n / 100 % 10] + dtw[n / 10 % 10] + doto[n % 10]
     return res.trim()
 }
