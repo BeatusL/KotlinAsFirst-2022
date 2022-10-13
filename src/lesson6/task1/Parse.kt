@@ -2,6 +2,7 @@
 
 package lesson6.task1
 import lesson2.task2.daysInMonth
+import java.lang.IllegalArgumentException
 import java.lang.IndexOutOfBoundsException
 
 // Урок 6: разбор строк, исключения
@@ -217,7 +218,22 @@ fun bestHighJump(jumps: String): Int {
  * Вернуть значение выражения (6 для примера).
  * Про нарушении формата входной строки бросить исключение IllegalArgumentException
  */
-fun plusMinus(expression: String): Int = TODO()
+fun plusMinus(expression: String): Int {
+    val exp = expression.split(" ")
+    var res = exp[0].toInt()
+    val e = IllegalArgumentException()
+    if (exp[0] != res.toString() || res < 0) throw e
+    for (i in 1 until exp.size step 2) {
+        val num = exp[i + 1]
+        when {
+            num != num.toInt().toString() || num.toInt() < 0 -> throw e
+            exp[i] == "+" -> res += num.toInt()
+            exp[i] == "-" -> res -= num.toInt()
+            else -> throw e
+        }
+    }
+    return res
+}
 
 /**
  * Сложная (6 баллов)
@@ -228,7 +244,19 @@ fun plusMinus(expression: String): Int = TODO()
  * Вернуть индекс начала первого повторяющегося слова, или -1, если повторов нет.
  * Пример: "Он пошёл в в школу" => результат 9 (индекс первого 'в')
  */
-fun firstDuplicateIndex(str: String): Int = TODO()
+fun firstDuplicateIndex(str: String): Int {
+    val list = str.split(" ").map { it.uppercase() }
+    var flag = -1
+    var res = -1
+    for (i in 0 until list.size) {
+        if (list[i] == list[i + 1]) flag = i
+    }
+    if (flag > -1) {
+        res = 0
+        for (i in 0 until flag) res += list[i].length + 1
+    }
+    return res
+}
 
 /**
  * Сложная (6 баллов)
