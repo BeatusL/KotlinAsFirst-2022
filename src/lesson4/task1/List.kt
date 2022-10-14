@@ -166,7 +166,7 @@ fun center(list: MutableList<Double>): MutableList<Double> {
 fun times(a: List<Int>, b: List<Int>): Int {
     var sum = 0
     if (a.isNotEmpty() && b.isNotEmpty()) {
-        for (i in 0 until a.size) {
+        for (i in a.indices) {
             sum += a[i] * b[i]
         }
     }
@@ -184,7 +184,7 @@ fun times(a: List<Int>, b: List<Int>): Int {
 fun polynom(p: List<Int>, x: Int): Int {
     var sum = 0.0
     if (p.isNotEmpty()) {
-        for (i in 0 until p.size) {
+        for (i in p.indices) {
             sum += p[i] * x.toDouble().pow(i)
         }
     }
@@ -261,6 +261,7 @@ fun factorizeToString(n: Int): String {
  * например: n = 100, base = 4 -> (1, 2, 1, 0) или n = 250, base = 14 -> (1, 3, 12)
  */
 fun convert(n: Int, base: Int): List<Int> {
+    val res: List<Int>
     if (n > 0) {
         val lst = mutableListOf<Int>()
         var numb = n
@@ -268,8 +269,9 @@ fun convert(n: Int, base: Int): List<Int> {
             lst += numb % base
             numb /= base
         }
-        return lst.reversed()
-    } else return listOf(0)
+        res = lst.reversed()
+    } else res = listOf(0)
+    return res
 }
 
 /**
@@ -284,6 +286,7 @@ fun convert(n: Int, base: Int): List<Int> {
  * (например, n.toString(base) и подобные), запрещается.
  */
 fun convertToString(n: Int, base: Int): String {
+    val ans: String
     if (n > 0) {
         var str = ""
         var numb = n
@@ -292,8 +295,9 @@ fun convertToString(n: Int, base: Int): String {
             str = if (res >= 10) (87 + res).toChar() + str else res.toString() + str
             numb /= base
         }
-        return str
-    } else return "0"
+        ans = str
+    } else ans = "0"
+    return ans
 }
 
 /**

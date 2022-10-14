@@ -146,7 +146,7 @@ fun flattenPhoneNumber(phone: String): String {
     var ans = ""
     val symbols = setOf('(', ' ', ')', '-')
     val numsAndPlus = setOf('0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '+')
-    for (i in 0 until phone.length) {
+    for (i in phone.indices) {
         val n = phone[i]
         when {
             n in numsAndPlus -> ans += n
@@ -202,7 +202,7 @@ fun bestHighJump(jumps: String): Int {
     val h = mutableListOf<Int>()
     try {
         val results = jumps.split(' ')
-        for (i in 0 until results.size)
+        for (i in results.indices)
             if (i % 2 == 0 && "+" in results[i + 1]) h.add(results[i].toInt())
         if (h.isEmpty()) return -1
         return h.max()
@@ -277,14 +277,14 @@ fun mostExpensive(description: String): String {
     if (description.isEmpty()) return ""
     val list = description.split("; ")
     var res = ""
-    var maxprice = -1.0
+    var maxPrice = -1.0
     for (element in list) {
         val price = element.split(" ").last().toDouble()
         when {
             price < 0 -> return ""
-            price > maxprice -> {
+            price > maxPrice -> {
                 res = element.split(" ").first()
-                maxprice = price
+                maxPrice = price
             }
         }
     }
@@ -395,4 +395,57 @@ fun fromRoman(roman: String): Int {
  * IllegalArgumentException должен бросаться даже если ошибочная команда не была достигнута в ходе выполнения.
  *
  */
-fun computeDeviceCells(cells: Int, commands: String, limit: Int): List<Int> = TODO()
+fun computeDeviceCells(cells: Int, commands: String, limit: Int): List<Int> {
+    val c = commands.toMutableList()
+    val res = MutableList(cells) { 0 }
+    var i = cells / 2
+    var j = 0
+    var left = limit
+    if (!commandsCheck(c)) throw IllegalArgumentException()
+    while (left > 0 && j < c.size) {
+        when {
+            i < 0 || i + 1 > res.size -> throw IllegalStateException()
+            c[j] == '>' -> i++
+            c[j] == '<' -> i--
+            c[j] == '+' -> res[i]++
+            c[j] == '-' -> res[i]--
+            c[j] == '[' -> {
+                if (res[i] == 0) {
+                    var k = j
+                    while (c[k] != ']') k++
+                    j = k
+                }
+            }
+            c[j] == ']' -> {
+                if (res[i] != 0) {
+                    var k = j
+                    var counter = 0
+                    while (c[k] != '[' || counter != 1) {
+                        when {
+                            c[k] == ']' -> counter++
+                            c[k] == '[' -> counter--
+                        }
+                        k--
+                    }
+                    j = k
+                }
+            }
+        }
+        j++
+        left--
+    }
+    return res
+}
+
+fun commandsCheck(commands: List<Char>): Boolean {
+    val legalSymbols = listOf('>', '<', '+', '-', '[', ']', ' ')
+    var c = 0
+    for (element in commands) {
+        when {
+            element == '[' -> c++
+            element == ']' -> c--
+            c < 0 -> return false
+        }
+    }
+    return c == 0 && commands.filter { it in legalSymbols }.size == commands.size
+}
