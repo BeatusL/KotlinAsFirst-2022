@@ -1,6 +1,7 @@
 @file:Suppress("UNUSED_PARAMETER", "ConvertCallChainIntoSequence")
 
 package lesson6.task1
+
 import lesson2.task2.daysInMonth
 import java.lang.IllegalArgumentException
 import java.lang.IndexOutOfBoundsException
@@ -78,6 +79,7 @@ fun main() {
  * входными данными.
  */
 fun dateStrToDigit(str: String): String {
+    var res: String
     try {
         val months = mapOf(
             "января" to "01", "февраля" to "02", "марта" to "03",
@@ -88,10 +90,11 @@ fun dateStrToDigit(str: String): String {
         val parts = str.split(" ")
         if (parts.size != 3 || check(parts[0].toInt(), months[parts[1]], parts[2].toInt()))
             throw NumberFormatException()
-        return String.format("%02d.${months[parts[1]]}.${parts[2].toInt()}", parts[0].toInt())
+        res = String.format("%02d.${months[parts[1]]}.${parts[2].toInt()}", parts[0].toInt())
     } catch (e: NumberFormatException) {
-        return ""
+        res = ""
     }
+    return res
 }
 
 fun check(day: Int, month: String?, year: Int): Boolean =
@@ -163,6 +166,7 @@ fun chFlPhNum(phone: String, c: Int): Boolean {
     }
     return true
 }
+
 /**
  * Средняя (5 баллов)
  *
@@ -248,7 +252,7 @@ fun firstDuplicateIndex(str: String): Int {
     val list = str.split(" ").map { it.uppercase() }
     var flag = -1
     var res = -1
-    for (i in 0 until list.size) {
+    for (i in 0 until list.size - 1) {
         if (list[i] == list[i + 1]) flag = i
     }
     if (flag > -1) {
@@ -269,7 +273,23 @@ fun firstDuplicateIndex(str: String): Int {
  * или пустую строку при нарушении формата строки.
  * Все цены должны быть больше нуля либо равны нулю.
  */
-fun mostExpensive(description: String): String = TODO()
+fun mostExpensive(description: String): String {
+    if (description.isEmpty()) return ""
+    val list = description.split("; ")
+    var res = ""
+    var maxprice = -1.0
+    for (element in list) {
+        val price = element.split(" ").last().toDouble()
+        when {
+            price < 0 -> return ""
+            price > maxprice -> {
+                res = element.split(" ").first()
+                maxprice = price
+            }
+        }
+    }
+    return res
+}
 
 /**
  * Сложная (6 баллов)
@@ -282,7 +302,62 @@ fun mostExpensive(description: String): String = TODO()
  *
  * Вернуть -1, если roman не является корректным римским числом
  */
-fun fromRoman(roman: String): Int = TODO()
+fun fromRoman(roman: String): Int {
+    val tsd = listOf("C", "CC", "CCC", "CD", "D", "DC", "DCC", "DCCC", "CM")
+    val tfd = listOf("X", "XX", "XXX", "XL", "L", "LX", "LXX", "LXXX", "XC")
+    val tzd = listOf("I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX")
+    var res = 0
+    var fl = 0
+    var i = 0
+    while (i < roman.length) {
+        when {
+
+            roman[i] == 'M' && fl == 0 -> {
+                res += 1000
+                i++
+            }
+
+            (roman[i] == 'C' || roman[i] == 'D') && fl == 0 -> {
+                var j = if (roman.length > i + 4) i + 4 else roman.length
+                while (roman.substring(i, j) !in tsd && j != i) {
+                    j--
+                }
+                if (i != j) {
+                    res += (tsd.indexOf(roman.substring(i, j)) + 1) * 100
+                    fl = 1
+                    i = j
+                } else return -1
+            }
+
+            (roman[i] == 'X' || roman[i] == 'L') && fl < 2 -> {
+                var j = if (roman.length > i + 4) i + 4 else roman.length
+                while (roman.substring(i, j) !in tfd && j != i) {
+                    j--
+                }
+                if (i != j) {
+                    res += (tfd.indexOf(roman.substring(i, j)) + 1) * 10
+                    fl = 2
+                    i = j
+                } else return -1
+            }
+
+            (roman[i] == 'I' || roman[i] == 'V') && fl < 3 -> {
+                var j = if (roman.length > i + 4) i + 4 else roman.length
+                while (roman.substring(i, j) !in tzd && j != i) {
+                    j--
+                }
+                if (i != j) {
+                    res += tzd.indexOf(roman.substring(i, j)) + 1
+                    fl = 3
+                    i = j
+                } else return -1
+            }
+
+            else -> return -1
+        }
+    }
+    return res
+}
 
 /**
  * Очень сложная (7 баллов)

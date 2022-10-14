@@ -124,13 +124,7 @@ fun minDivisor(n: Int): Int {
  *
  * Для заданного числа n > 1 найти максимальный делитель, меньший n
  */
-fun maxDivisor(n: Int): Int {
-    if (n % 2 == 0) return n / 2
-    for (k in 3..sqrt(n.toDouble()).toInt() step 2) {
-        if (n % k == 0) return n / k
-    }
-    return 1
-}
+fun maxDivisor(n: Int): Int = n / minDivisor(n)
 
 
 /**
@@ -290,7 +284,7 @@ fun cos(x: Double, eps: Double): Double {
 fun squareSequenceDigit(n: Int): Int {
     var left = n
     var count = 0
-    var curnumb = 0
+    var curnumb: Int
     do {
         count ++
         curnumb = count * count
@@ -316,7 +310,7 @@ fun squareSequenceDigit(n: Int): Int {
 fun fibSequenceDigit(n: Int): Int {
     var left = n
     var count = 0
-    var curnumb = 0
+    var curnumb: Int
     do {
         count++
         curnumb = fib(count)
