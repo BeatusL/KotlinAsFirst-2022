@@ -178,13 +178,10 @@ fun chFlPhNum(phone: String, c: Int): Boolean {
  * При нарушении формата входной строки или при отсутствии в ней чисел, вернуть -1.
  */
 fun bestLongJump(jumps: String): Int {
-    try {
-        val results = jumps.split(' ').filter { it != "%" && it != "-" }.map { it.toInt() }
-        if (results.isEmpty()) return -1
-        return results.max()
-    } catch (e: NumberFormatException) {
-        return -1
-    }
+    if (!(jumps.matches(Regex("([0-9]+|[%-] )*[0-9]+|[%-]")))) return -1
+    val results = jumps.split(' ').filter { it != "%" && it != "-" }.map { it.toInt() }
+    return results.max()
+
 }
 
 /**
@@ -199,19 +196,15 @@ fun bestLongJump(jumps: String): Int {
  * вернуть -1.
  */
 fun bestHighJump(jumps: String): Int {
+    if (!(jumps.matches(Regex("([0-9]+ [+%-]+ )*[0-9]+ [+%-]+")))) return -1
     val h = mutableListOf<Int>()
-    try {
-        val results = jumps.split(' ')
-        for (i in results.indices)
-            if (i % 2 == 0 && "+" in results[i + 1]) h.add(results[i].toInt())
-        if (h.isEmpty()) return -1
-        return h.max()
-    } catch (e: IndexOutOfBoundsException) {
-        return -1
-    } catch (e: java.lang.NumberFormatException) {
-        return -1
-    }
+    val results = jumps.split(' ')
+    for (i in results.indices)
+        if (i % 2 == 0 && "+" in results[i + 1]) h.add(results[i].toInt())
+    if (h.isEmpty()) return -1
+    return h.max()
 }
+
 
 /**
  * Сложная (6 баллов)
@@ -223,17 +216,14 @@ fun bestHighJump(jumps: String): Int {
  * Про нарушении формата входной строки бросить исключение IllegalArgumentException
  */
 fun plusMinus(expression: String): Int {
+    if (!(expression.matches(Regex("([0-9]+ [+-] )*[0-9]+")))) throw IllegalArgumentException()
     val exp = expression.split(" ")
     var res = exp[0].toInt()
-    val e = IllegalArgumentException()
-    if (exp[0] != res.toString() || res < 0) throw e
     for (i in 1 until exp.size step 2) {
         val num = exp[i + 1]
         when {
-            num != num.toInt().toString() || num.toInt() < 0 -> throw e
             exp[i] == "+" -> res += num.toInt()
             exp[i] == "-" -> res -= num.toInt()
-            else -> throw e
         }
     }
     return res
@@ -303,6 +293,7 @@ fun mostExpensive(description: String): String {
  * Вернуть -1, если roman не является корректным римским числом
  */
 fun fromRoman(roman: String): Int {
+    if (roman.isEmpty()) return -1
     val tsd = listOf("C", "CC", "CCC", "CD", "D", "DC", "DCC", "DCCC", "CM")
     val tfd = listOf("X", "XX", "XXX", "XL", "L", "LX", "LXX", "LXXX", "XC")
     val tzd = listOf("I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX")

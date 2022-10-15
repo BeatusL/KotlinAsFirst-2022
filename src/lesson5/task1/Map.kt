@@ -388,7 +388,17 @@ fun findSumOfTwo(list: List<Int>, number: Int): Pair<Int, Int> {
     while (l < r) {
         val sum = sList[l] + sList[r]
         when {
-            sum == number -> return Pair(l, r)
+            sum == number -> {
+                if (sList[l] != sList[r]) return Pair(minOf(list.indexOf(sList[l]), list.indexOf(sList[r])),
+                    maxOf(list.indexOf(sList[l]), list.indexOf(sList[r])))
+                else {
+                    return Pair(
+                        list.indexOf(sList[l]),
+                        list.subList(list.indexOf(sList[l]) + 1, list.size).indexOf(sList[l])
+                                + list.indexOf(sList[l]) + 1
+                    )
+                }
+            }
             sum < number -> l++
             else -> r--
         }
