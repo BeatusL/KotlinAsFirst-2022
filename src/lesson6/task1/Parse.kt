@@ -178,10 +178,9 @@ fun chFlPhNum(phone: String, c: Int): Boolean {
  * При нарушении формата входной строки или при отсутствии в ней чисел, вернуть -1.
  */
 fun bestLongJump(jumps: String): Int {
-    if (!(jumps.matches(Regex("([0-9]+|[%-] )*[0-9]+|[%-]")))) return -1
+    if (!(jumps.matches(Regex("([0-9]+|[%-])( ([0-9]+|[%-]))*")))) return -1
     val results = jumps.split(' ').filter { it != "%" && it != "-" }.map { it.toInt() }
-    return results.max()
-
+    if (results.isNotEmpty()) return results.max() else return -1
 }
 
 /**
@@ -243,7 +242,10 @@ fun firstDuplicateIndex(str: String): Int {
     var flag = -1
     var res = -1
     for (i in 0 until list.size - 1) {
-        if (list[i] == list[i + 1]) flag = i
+        if (list[i] == list[i + 1]) {
+            flag = i
+            break
+        }
     }
     if (flag > -1) {
         res = 0
@@ -395,9 +397,14 @@ fun computeDeviceCells(cells: Int, commands: String, limit: Int): List<Int> {
     if (!commandsCheck(c)) throw IllegalArgumentException()
     while (left > 0 && j < c.size) {
         when {
-            i < 0 || i + 1 > res.size -> throw IllegalStateException()
-            c[j] == '>' -> i++
-            c[j] == '<' -> i--
+            c[j] == '>' -> {
+                i++
+                if (i + 1 > res.size) throw IllegalStateException()
+            }
+            c[j] == '<' -> {
+                i--
+                if (i < 0) throw IllegalStateException()
+            }
             c[j] == '+' -> res[i]++
             c[j] == '-' -> res[i]--
             c[j] == '[' -> {
