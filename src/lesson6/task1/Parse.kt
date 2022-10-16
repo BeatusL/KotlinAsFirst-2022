@@ -411,7 +411,7 @@ fun computeDeviceCells(cells: Int, commands: String, limit: Int): List<Int> {
                 if (res[i] == 0) {
                     var k = j
                     while (c[k] != ']') k++
-                    j = k
+                    j = k + 1
                 }
             }
             c[j] == ']' -> {
