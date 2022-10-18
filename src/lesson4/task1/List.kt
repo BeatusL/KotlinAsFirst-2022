@@ -153,7 +153,8 @@ fun center(list: MutableList<Double>): MutableList<Double> {
  * представленные в виде списков a и b. Скалярное произведение считать по формуле:
  * C = a1b1 + a2b2 + ... + aNbN. Произведение пустых векторов считать равным 0.
  */
-fun times(a: List<Int>, b: List<Int>): Int = a.mapIndexed { index, i -> i * b[index] }.sum()
+fun times(a: List<Int>, b: List<Int>): Int =
+    a.mapIndexed { index, i -> i * b[index] }.sum()
 
 /**
  * Средняя (3 балла)
@@ -163,7 +164,8 @@ fun times(a: List<Int>, b: List<Int>): Int = a.mapIndexed { index, i -> i * b[in
  * Коэффициенты многочлена заданы списком p: (p0, p1, p2, p3, ..., pN).
  * Значение пустого многочлена равно 0 при любом x.
  */
-fun polynom(p: List<Int>, x: Int): Int = p.mapIndexed { index, i -> i * x.toDouble().pow(index) }.sum().toInt()
+fun polynom(p: List<Int>, x: Int): Int =
+    p.mapIndexed { index, i -> i * x.toDouble().pow(index) }.sum().toInt()
 
 /**
  * Средняя (3 балла)
@@ -219,17 +221,15 @@ fun factorizeToString(n: Int): String = factorize(n).joinToString("*")
  * например: n = 100, base = 4 -> (1, 2, 1, 0) или n = 250, base = 14 -> (1, 3, 12)
  */
 fun convert(n: Int, base: Int): List<Int> {
-    val res: List<Int>
+    val lst = mutableListOf<Int>()
     if (n > 0) {
-        val lst = mutableListOf<Int>()
         var numb = n
         while (numb > 0) {
             lst += numb % base
             numb /= base
         }
-        res = lst.reversed()
-    } else res = listOf(0)
-    return res
+    } else return listOf(0)
+    return lst.reversed()
 }
 
 /**
@@ -250,7 +250,7 @@ fun convertToString(n: Int, base: Int): String {
         var numb = n
         while (numb > 0) {
             val res = numb % base
-            str = if (res >= 10) (87 + res).toChar() + str else res.toString() + str
+            str = if (res >= 10) 'a' - 10 + res + str else res.toString() + str
             numb /= base
         }
         ans = str
@@ -287,16 +287,8 @@ fun decimal(digits: List<Int>, base: Int): Int {
  * Использовать функции стандартной библиотеки, напрямую и полностью решающие данную задачу
  * (например, str.toInt(base)), запрещается.
  */
-fun decimalFromString(str: String, base: Int): Int {
-    var res = 0.0
-    var c = str.length - 1
-    for (chr in str) {
-        res = if (chr.code <= 57) res + (chr.code - 48) * base.toDouble().pow(c)
-        else res + (chr.code - 87) * base.toDouble().pow(c)
-        c--
-    }
-    return res.toInt()
-}
+fun decimalFromString(str: String, base: Int): Int =
+    decimal(str.toList().map { if (it in '0'..'9') it.toString().toInt() else it - 'a' + 10 }, base)
 
 /**
  * Сложная (5 баллов)
