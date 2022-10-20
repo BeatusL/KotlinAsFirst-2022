@@ -97,16 +97,7 @@ fun buildWordSet(text: List<String>): MutableSet<String> {
  *   buildGrades(mapOf("Марат" to 3, "Семён" to 5, "Михаил" to 5))
  *     -> mapOf(5 to listOf("Семён", "Михаил"), 3 to listOf("Марат"))
  */
-fun buildGrades(grades: Map<String, Int>): Map<Int, List<String>> {
-    val ans = mutableMapOf<Int, List<String>>()
-    for ((name, grade) in grades) {
-        when {
-            (grade !in ans) -> ans[grade] = listOf(name)
-            (ans[grade] != null) -> ans[grade] = ans[grade]!! + name
-        }
-    }
-    return ans
-}
+fun buildGrades(grades: Map<String, Int>): Map<Int, List<String>> = grades.keys.groupBy { grades[it]!! }
 
 /**
  * Простая (2 балла)
@@ -194,18 +185,15 @@ fun mergePhoneBooks(mapA: Map<String, String>, mapB: Map<String, String>): Map<S
  *     -> mapOf("MSFT" to 150.0, "NFLX" to 40.0)
  */
 fun averageStockPrice(stockPrices: List<Pair<String, Double>>): Map<String, Double> {
-    val m = mutableMapOf<String, List<Double>>()
-    val ans = mutableMapOf<String, Double>()
-    for ((stock, price) in stockPrices) {
-        if (m.contains(stock)) m[stock] = listOf(m[stock]!!.first() + price, m[stock]!!.last() + 1)
-        else m[stock] = listOf(price, 1.0)
+    val map = stockPrices.groupBy { it.first }
+    val res = mutableMapOf<String, Double>()
+    for ((key, value) in map) {
+        var sum = 0.0
+        for (element in value) sum += element.second
+        res[key] = sum / value.size
     }
-    for ((stock, list) in m) {
-        ans[stock] = list.first() / list.last()
-    }
-    return ans
+    return res
 }
-
 
 /**
  * Средняя (4 балла)
@@ -286,10 +274,10 @@ fun extractRepeats(list: List<String>): Map<String, Int> {
 fun hasAnagrams(words: List<String>): Boolean {
     if (words.isEmpty()) return false
     for (i in words.indices) {
-        for (j in words.indices) {
+        for (j in i + 1 until words.size) {
             val word1 = words[i]
             val word2 = words[j]
-            if (i != j && word1.toSet() == word2.toSet() && word1.length == word2.length) return true
+            if (word1.toSet() == word2.toSet() && word1.length == word2.length) return true
         }
     }
     return false
@@ -382,28 +370,16 @@ fun propagateHandshakes(friends: Map<String, Set<String>>): Map<String, Set<Stri
  *   findSumOfTwo(listOf(1, 2, 3), 6) -> Pair(-1, -1)
  */
 fun findSumOfTwo(list: List<Int>, number: Int): Pair<Int, Int> {
-    val sList = list.sorted()
-    var l = 0
-    var r = list.size - 1
-    while (l < r) {
-        val sum = sList[l] + sList[r]
-        when {
-            sum == number -> {
-                if (sList[l] != sList[r]) return Pair(minOf(list.indexOf(sList[l]), list.indexOf(sList[r])),
-                    maxOf(list.indexOf(sList[l]), list.indexOf(sList[r])))
-                else {
-                    return Pair(
-                        list.indexOf(sList[l]),
-                        list.subList(list.indexOf(sList[l]) + 1, list.size).indexOf(sList[l])
-                                + list.indexOf(sList[l]) + 1
-                    )
-                }
-            }
-            sum < number -> l++
-            else -> r--
+    val map = List(list.size) { it }.groupBy { list[it] }
+    var res = Pair(-1, -1)
+    for (i in list.indices) {
+        val element = list[i]
+        if ((number - element) in map && i != map[(number - element)]!![0]) {
+            res = Pair(i, map[(number - element)]!![0])
+            break
         }
     }
-    return Pair(-1, -1)
+    return res
 }
 
 /**
