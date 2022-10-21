@@ -143,29 +143,18 @@ fun dateDigitToStr(digital: String): String {
  * PS: Дополнительные примеры работы функции можно посмотреть в соответствующих тестах.
  */
 fun flattenPhoneNumber(phone: String): String {
+    if (!(phone.matches(Regex("(\\+[0-9]+)?[ \\-]*(\\(([ \\-]*[0-9])+\\))?([ \\-]*[0-9])*")))) return ""
     var ans = ""
-    val symbols = setOf('(', ' ', ')', '-')
-    val numsAndPlus = setOf('0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '+')
     for (i in phone.indices) {
         val n = phone[i]
-        when {
-            n in numsAndPlus -> ans += n
-            n == '(' && chFlPhNum(phone, i) -> return ""
-            (n !in symbols) -> return ""
+        if (n !in setOf('(', ')', '-', ' ')) {
+
+            ans += n
         }
     }
     return ans
 }
 
-fun chFlPhNum(phone: String, c: Int): Boolean {
-    var n = c
-    val nums = setOf('0', '1', '2', '3', '4', '5', '6', '7', '8', '9')
-    while (phone[n] != ')' && n + 1 < phone.length) {
-        n++
-        if (phone[n] in nums) return false
-    }
-    return true
-}
 
 /**
  * Средняя (5 баллов)
@@ -266,18 +255,15 @@ fun firstDuplicateIndex(str: String): Int {
  * Все цены должны быть больше нуля либо равны нулю.
  */
 fun mostExpensive(description: String): String {
-    if (description.isEmpty()) return ""
+    if (!(description.matches(Regex("([а-яёА-ЯЁ]+ [0-9]+.[0-9]+; )*[а-яёА-ЯЁ]+ [0-9]+.[0-9]+")))) return ""
     val list = description.split("; ")
     var res = ""
     var maxPrice = -1.0
     for (element in list) {
         val price = element.split(" ").last().toDouble()
-        when {
-            price < 0 -> return ""
-            price > maxPrice -> {
-                res = element.split(" ").first()
-                maxPrice = price
-            }
+        if (price > maxPrice) {
+            res = element.split(" ").first()
+            maxPrice = price
         }
     }
     return res
@@ -295,59 +281,25 @@ fun mostExpensive(description: String): String {
  * Вернуть -1, если roman не является корректным римским числом
  */
 fun fromRoman(roman: String): Int {
-    if (roman.isEmpty()) return -1
-    val tsd = listOf("C", "CC", "CCC", "CD", "D", "DC", "DCC", "DCCC", "CM")
-    val tfd = listOf("X", "XX", "XXX", "XL", "L", "LX", "LXX", "LXXX", "XC")
-    val tzd = listOf("I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX")
+    val e = Regex("(M)*(D?(C){0,3}|(C){0,3}D|CM)(L?(X){0,3}|(X){0,3}L|XC)(V?(I){0,3}|(I){0,3}V|IX)")
+    if (!(roman.matches(e)) || roman.isEmpty()) return -1
     var res = 0
-    var fl = 0
+    val map = mapOf<String, Int>("I" to 1, "IV" to 4, "V" to 5,
+        "VI" to 6, "IX" to 9, "X" to 10,
+        "XL" to 40, "L" to 50, "LX" to 60,
+        "XC" to 90, "C" to 100, "CD" to 400,
+        "D" to 500, "DC" to 600, "CM" to 900)
     var i = 0
-    while (i < roman.length) {
-        when {
-
-            roman[i] == 'M' && fl == 0 -> {
-                res += 1000
-                i++
-            }
-
-            (roman[i] == 'C' || roman[i] == 'D') && fl == 0 -> {
-                var j = if (roman.length > i + 4) i + 4 else roman.length
-                while (roman.substring(i, j) !in tsd && j != i) {
-                    j--
-                }
-                if (i != j) {
-                    res += (tsd.indexOf(roman.substring(i, j)) + 1) * 100
-                    fl = 1
-                    i = j
-                } else return -1
-            }
-
-            (roman[i] == 'X' || roman[i] == 'L') && fl < 2 -> {
-                var j = if (roman.length > i + 4) i + 4 else roman.length
-                while (roman.substring(i, j) !in tfd && j != i) {
-                    j--
-                }
-                if (i != j) {
-                    res += (tfd.indexOf(roman.substring(i, j)) + 1) * 10
-                    fl = 2
-                    i = j
-                } else return -1
-            }
-
-            (roman[i] == 'I' || roman[i] == 'V') && fl < 3 -> {
-                var j = if (roman.length > i + 4) i + 4 else roman.length
-                while (roman.substring(i, j) !in tzd && j != i) {
-                    j--
-                }
-                if (i != j) {
-                    res += tzd.indexOf(roman.substring(i, j)) + 1
-                    fl = 3
-                    i = j
-                } else return -1
-            }
-
-            else -> return -1
-        }
+    while (i != roman.length && roman[i] == 'M'){
+        i++
+    }
+    res += i * 1000
+    while (i != roman.length) {
+        if (i + 1 < roman.length && roman.substring(i, i + 2) in map) {
+            res += map[roman.substring(i, i + 2)]!!
+            i++
+        } else res += map[roman[i].toString()]!!
+        i++
     }
     return res
 }
