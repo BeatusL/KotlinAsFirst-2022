@@ -211,14 +211,14 @@ fun averageStockPrice(stockPrices: List<Pair<String, Double>>): Map<String, Doub
  *   ) -> "Мария"
  */
 fun findCheapestStuff(stuff: Map<String, Pair<String, Double>>, kind: String): String? {
+    val map = stuff.keys.groupBy { stuff[it]!!.first }
     var ans: String? = null
     var c = Double.MAX_VALUE
-    for ((name, typePrice) in stuff) {
-        val type = typePrice.toList().first()
-        val price = typePrice.toList().last().toString().toDouble()
-        if (price <= c && type == kind) {
-            ans = name
-            c = price
+    if (kind !in map.keys) return null
+    for (element in map[kind]!!) {
+        if (stuff[element]!!.second <= c) {
+            c = stuff[element]!!.second
+            ans = element
         }
     }
     return ans
