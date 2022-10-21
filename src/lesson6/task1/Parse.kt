@@ -284,7 +284,7 @@ fun fromRoman(roman: String): Int {
     val e = Regex("(M)*(D?(C){0,3}|(C){0,3}D|CM)(L?(X){0,3}|(X){0,3}L|XC)(V?(I){0,3}|(I){0,3}V|IX)")
     if (!(roman.matches(e)) || roman.isEmpty()) return -1
     var res = 0
-    val map = mapOf<String, Int>("I" to 1, "IV" to 4, "V" to 5,
+    val map = mapOf("I" to 1, "IV" to 4, "V" to 5,
         "VI" to 6, "IX" to 9, "X" to 10,
         "XL" to 40, "L" to 50, "LX" to 60,
         "XC" to 90, "C" to 100, "CD" to 400,
@@ -362,15 +362,22 @@ fun computeDeviceCells(cells: Int, commands: String, limit: Int): List<Int> {
             c[j] == '[' -> {
                 if (res[i] == 0) {
                     var k = j
-                    while (c[k] != ']') k++
-                    j = k + 1
+                    var count = -1
+                    while (c[k] != ']' || count != 0) {
+                        when {
+                            c[k] == '[' -> count++
+                            c[k] == ']' -> count--
+                        }
+                        k++
+                    }
+                    j = k
                 }
             }
             c[j] == ']' -> {
                 if (res[i] != 0) {
                     var k = j
-                    var counter = 0
-                    while (c[k] != '[' || counter != 1) {
+                    var counter = -1
+                    while (c[k] != '[' || counter != 0) {
                         when {
                             c[k] == ']' -> counter++
                             c[k] == '[' -> counter--
