@@ -1,6 +1,7 @@
 @file:Suppress("UNUSED_PARAMETER", "ConvertCallChainIntoSequence")
 
 package lesson5.task1
+import lesson4.task1.mean
 
 
 // Урок 5: ассоциативные массивы и множества
@@ -184,16 +185,8 @@ fun mergePhoneBooks(mapA: Map<String, String>, mapB: Map<String, String>): Map<S
  *   averageStockPrice(listOf("MSFT" to 100.0, "MSFT" to 200.0, "NFLX" to 40.0))
  *     -> mapOf("MSFT" to 150.0, "NFLX" to 40.0)
  */
-fun averageStockPrice(stockPrices: List<Pair<String, Double>>): Map<String, Double> {
-    val map = stockPrices.groupBy { it.first }
-    val res = mutableMapOf<String, Double>()
-    for ((key, value) in map) {
-        var sum = 0.0
-        for (element in value) sum += element.second
-        res[key] = sum / value.size
-    }
-    return res
-}
+fun averageStockPrice(stockPrices: List<Pair<String, Double>>): Map<String, Double> =
+    stockPrices.groupBy({ it.first }, { it.second }).mapValues { mean(it.value) }
 
 /**
  * Средняя (4 балла)
@@ -210,19 +203,8 @@ fun averageStockPrice(stockPrices: List<Pair<String, Double>>): Map<String, Doub
  *     "печенье"
  *   ) -> "Мария"
  */
-fun findCheapestStuff(stuff: Map<String, Pair<String, Double>>, kind: String): String? {
-    val map = stuff.keys.groupBy { stuff[it]!!.first }
-    var ans: String? = null
-    var c = Double.MAX_VALUE
-    if (kind !in map.keys) return null
-    for (element in map[kind]!!) {
-        if (stuff[element]!!.second <= c) {
-            c = stuff[element]!!.second
-            ans = element
-        }
-    }
-    return ans
-}
+fun findCheapestStuff(stuff: Map<String, Pair<String, Double>>, kind: String): String? =
+    stuff.filter { it.value.first == kind }.minByOrNull { it.value.second }?.key
 
 /**
  * Средняя (3 балла)
@@ -249,15 +231,9 @@ fun canBuildFrom(chars: List<Char>, word: String): Boolean =
  * Например:
  *   extractRepeats(listOf("a", "b", "a")) -> mapOf("a" to 2)
  */
-fun extractRepeats(list: List<String>): Map<String, Int> {
-    val ans = mutableMapOf<String, Int>()
-    val s = list.toSet()
-    for (elements in s) {
-        val c = list.count { it == elements }
-        if (c > 1) ans[elements] = c
-    }
-    return ans
-}
+fun extractRepeats(list: List<String>): Map<String, Int> =
+    list.groupBy { it }.mapValues { it.value.size }.filter { it.value > 1 }
+
 
 /**
  * Средняя (3 балла)
@@ -370,12 +346,13 @@ fun propagateHandshakes(friends: Map<String, Set<String>>): Map<String, Set<Stri
  *   findSumOfTwo(listOf(1, 2, 3), 6) -> Pair(-1, -1)
  */
 fun findSumOfTwo(list: List<Int>, number: Int): Pair<Int, Int> {
-    val map = List(list.size) { it }.groupBy { list[it] }
+    val map = mutableMapOf<Int, Int>()
+    for (i in list.indices) map[list[i]] = i
     var res = Pair(-1, -1)
     for (i in list.indices) {
         val element = list[i]
-        if ((number - element) in map && i != map[(number - element)]!![0]) {
-            res = Pair(i, map[(number - element)]!![0])
+        if ((number - element) in map && i != map[(number - element)]!!) {
+            res = Pair(i, map[(number - element)]!!)
             break
         }
     }
