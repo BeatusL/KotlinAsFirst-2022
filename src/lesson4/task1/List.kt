@@ -243,20 +243,9 @@ fun convert(n: Int, base: Int): List<Int> {
  * Использовать функции стандартной библиотеки, напрямую и полностью решающие данную задачу
  * (например, n.toString(base) и подобные), запрещается.
  */
-fun convertToString(n: Int, base: Int): String {
-    val ans: String
-    if (n > 0) {
-        var str = ""
-        var numb = n
-        while (numb > 0) {
-            val res = numb % base
-            str = if (res >= 10) 'a' - 10 + res + str else res.toString() + str
-            numb /= base
-        }
-        ans = str
-    } else ans = "0"
-    return ans
-}
+fun convertToString(n: Int, base: Int): String =
+    convert(n, base).joinToString(separator = "") { if (it >= 10) ('a' - 10 + it).toString() else it.toString() }
+
 
 /**
  * Средняя (3 балла)
