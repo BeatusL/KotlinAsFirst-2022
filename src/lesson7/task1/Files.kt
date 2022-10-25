@@ -72,6 +72,7 @@ fun deleteMarked(inputName: String, outputName: String) {
                     it.write(line)
                     fl = false
                 }
+
                 line[0] != '_' -> {
                     it.newLine()
                     it.write(line)

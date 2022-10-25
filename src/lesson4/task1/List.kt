@@ -122,7 +122,7 @@ fun buildSumExample(list: List<Int>) = list.joinToString(separator = " + ", post
  * по формуле abs = sqrt(a1^2 + a2^2 + ... + aN^2).
  * Модуль пустого вектора считать равным 0.0.
  */
-fun abs(v: List<Double>): Double = sqrt(v.map { it * it }.sum())
+fun abs(v: List<Double>): Double = sqrt(v.sumOf { it * it })
 
 /**
  * Простая (2 балла)
@@ -344,11 +344,11 @@ fun russian(n: Int): String {
     if (n >= 1000) {
         res = if (n / 10000 % 10 == 1) res + dth[n / 100000] + doto[n / 1000 % 100]
         else res + dth[n / 100000] + dtw[n / 10000 % 10] + dott[n / 1000 % 10]
-        when {
-            n / 1000 % 100 in 11..19 -> res += "тысяч "
-            n / 1000 % 10 in 2..4 -> res += "тысячи "
-            n / 1000 % 10 == 1 -> res += "тысяча "
-            else -> res += "тысяч "
+        res += when {
+            n / 1000 % 100 in 11..19 -> "тысяч "
+            n / 1000 % 10 in 2..4 -> "тысячи "
+            n / 1000 % 10 == 1 -> "тысяча "
+            else -> "тысяч "
         }
     }
     res = if (n / 10 % 10 < 2) res + dth[n / 100 % 10] + doto[n % 100]

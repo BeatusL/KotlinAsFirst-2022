@@ -79,8 +79,7 @@ fun main() {
  * входными данными.
  */
 fun dateStrToDigit(str: String): String {
-    var res: String
-    try {
+    val res: String = try {
         val months = mapOf(
             "января" to "01", "февраля" to "02", "марта" to "03",
             "апреля" to "04", "мая" to "05", "июня" to "06",
@@ -90,9 +89,9 @@ fun dateStrToDigit(str: String): String {
         val parts = str.split(" ")
         if (parts.size != 3 || check(parts[0].toInt(), months[parts[1]], parts[2].toInt()))
             throw NumberFormatException()
-        res = String.format("%02d.${months[parts[1]]}.${parts[2].toInt()}", parts[0].toInt())
+        String.format("%02d.${months[parts[1]]}.${parts[2].toInt()}", parts[0].toInt())
     } catch (e: NumberFormatException) {
-        res = ""
+        ""
     }
     return res
 }
@@ -112,7 +111,7 @@ fun check(day: Int, month: String?, year: Int): Boolean =
  * входными данными.
  */
 fun dateDigitToStr(digital: String): String {
-    try {
+    return try {
         val months = mapOf(
             "01" to "января", "02" to "февраля", "03" to "марта",
             "04" to "апреля", "05" to "мая", "06" to "июня",
@@ -122,9 +121,9 @@ fun dateDigitToStr(digital: String): String {
         val parts = digital.split(".")
         if (parts.size != 3 || months[parts[1]] == null || check(parts[0].toInt(), parts[1], parts[2].toInt()))
             throw NumberFormatException()
-        return String.format("%d ${months[parts[1]]} %d", parts[0].toInt(), parts[2].toInt())
+        String.format("%d ${months[parts[1]]} %d", parts[0].toInt(), parts[2].toInt())
     } catch (e: NumberFormatException) {
-        return ""
+        ""
     }
 }
 
@@ -169,7 +168,7 @@ fun flattenPhoneNumber(phone: String): String {
 fun bestLongJump(jumps: String): Int {
     if (!(jumps.matches(Regex("([0-9]+|[%-])( ([0-9]+|[%-]))*")))) return -1
     val results = jumps.split(' ').filter { it != "%" && it != "-" }.map { it.toInt() }
-    if (results.isNotEmpty()) return results.max() else return -1
+    return if (results.isNotEmpty()) results.max() else -1
 }
 
 /**
@@ -183,16 +182,9 @@ fun bestLongJump(jumps: String): Int {
  * При нарушении формата входной строки, а также в случае отсутствия удачных попыток,
  * вернуть -1.
  */
-fun bestHighJump(jumps: String): Int {
-    if (!(jumps.matches(Regex("([0-9]+ [+%-]+ )*[0-9]+ [+%-]+")))) return -1
-    val h = mutableListOf<Int>()
-    val results = jumps.split(' ')
-    for (i in results.indices)
-        if (i % 2 == 0 && "+" in results[i + 1]) h.add(results[i].toInt())
-    if (h.isEmpty()) return -1
-    return h.max()
-}
-
+fun bestHighJump(jumps: String): Int =
+    if (!(jumps.matches(Regex("([0-9]+ [+%-]+ )*[0-9]+ [+%-]+")))) -1
+    else Regex("([0-9]+ [%\\-]+ )|([%\\-+ ])").split("$jumps ").max().toInt()
 
 /**
  * Сложная (6 баллов)
@@ -208,10 +200,10 @@ fun plusMinus(expression: String): Int {
     val exp = expression.split(" ")
     var res = exp[0].toInt()
     for (i in 1 until exp.size step 2) {
-        val num = exp[i + 1]
+        val num = exp[i + 1].toInt()
         when {
-            exp[i] == "+" -> res += num.toInt()
-            exp[i] == "-" -> res -= num.toInt()
+            exp[i] == "+" -> res += num
+            exp[i] == "-" -> res -= num
         }
     }
     return res
@@ -285,13 +277,15 @@ fun fromRoman(roman: String): Int {
     val e = Regex("(M)*(D?(C){0,3}|(C){0,3}D|CM)(L?(X){0,3}|(X){0,3}L|XC)(V?(I){0,3}|(I){0,3}V|IX)")
     if (!(roman.matches(e)) || roman.isEmpty()) return -1
     var res = 0
-    val map = mapOf("I" to 1, "IV" to 4, "V" to 5,
+    val map = mapOf(
+        "I" to 1, "IV" to 4, "V" to 5,
         "VI" to 6, "IX" to 9, "X" to 10,
         "XL" to 40, "L" to 50, "LX" to 60,
         "XC" to 90, "C" to 100, "CD" to 400,
-        "D" to 500, "DC" to 600, "CM" to 900)
+        "D" to 500, "DC" to 600, "CM" to 900
+    )
     var i = 0
-    while (i != roman.length && roman[i] == 'M'){
+    while (i != roman.length && roman[i] == 'M') {
         i++
     }
     res += i * 1000
@@ -354,10 +348,12 @@ fun computeDeviceCells(cells: Int, commands: String, limit: Int): List<Int> {
                 i++
                 if (i + 1 > res.size) throw IllegalStateException()
             }
+
             c[j] == '<' -> {
                 i--
                 if (i < 0) throw IllegalStateException()
             }
+
             c[j] == '+' -> res[i]++
             c[j] == '-' -> res[i]--
             c[j] == '[' -> {
@@ -374,6 +370,7 @@ fun computeDeviceCells(cells: Int, commands: String, limit: Int): List<Int> {
                     j = k
                 }
             }
+
             c[j] == ']' -> {
                 if (res[i] != 0) {
                     var k = j
