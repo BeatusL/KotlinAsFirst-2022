@@ -92,19 +92,23 @@ fun deleteMarked(inputName: String, outputName: String) {
  *
  */
 fun countSubstrings(inputName: String, substrings: List<String>): Map<String, Int> {
-    val count = MutableList(substrings.size) { 0 }
-    val substringsUpper = substrings.map { it.uppercase() }
+    val subs = substrings.groupBy({ it.uppercase() }, { it })
+    val lengths = substrings.map { it.length }.sorted().toSet()
+    val res = mutableMapOf<String, Int>()
+    for (element in substrings) res[element] = 0
     File(inputName).bufferedReader().use {
         for (line in it.readLines()) {
             val lineUpper = line.uppercase()
-            for (i in count.indices) {
-                count[i] += Regex(substringsUpper[i]).findAll(lineUpper).count()
+            for (i in lineUpper.indices) {
+                for (len in lengths) {
+                    if (i + len > lineUpper.length) continue
+                    val curSub = lineUpper.substring(i, i + len)
+                    if (curSub in subs) res[subs[curSub]!!.first()] = res[subs[curSub]!!.first()]!! + 1
+                }
             }
         }
     }
-    val ans = mutableMapOf<String, Int>()
-    for (i in count.indices) ans[substrings[i]] = count[i]
-    return ans
+    return res
 }
 
 
@@ -122,7 +126,20 @@ fun countSubstrings(inputName: String, substrings: List<String>): Map<String, In
  *
  */
 fun sibilants(inputName: String, outputName: String) {
-    TODO()
+    val foo = listOf("Ж", "Ч", "Ш", "Щ")
+    val incorrect = mapOf('ы' to 'и', 'Ы' to 'И', 'я' to 'а', 'Я' to 'А', 'ю' to 'у', 'Ю' to 'У')
+    File(outputName).bufferedWriter().use {
+        for (line in File(inputName).readLines()) {
+            var res = line[0].toString()
+            for (i in 0 until line.length - 1) {
+                res +=
+                    if (line[i].uppercase() in foo && line[i + 1] in incorrect.keys) incorrect[line[i + 1]]!!
+                    else line[i + 1]
+            }
+            it.write(res)
+            it.newLine()
+        }
+    }
 }
 
 /**
@@ -312,7 +329,64 @@ Suspendisse ~~et elit in enim tempus iaculis~~.
  * (Отступы и переносы строк в примере добавлены для наглядности, при решении задачи их реализовывать не обязательно)
  */
 fun markdownToHtmlSimple(inputName: String, outputName: String) {
-    TODO()
+    File(outputName).bufferedWriter().use {
+        it.write("<html>\n    <body>\n        <p>")
+        for (line in File(inputName).readLines()) {
+            if (line.isEmpty()) {
+                it.write("\n        </p>\n        <p>")
+                continue
+            } else it.write("\n")
+            var flI = false
+            var flB = false
+            var flS = false
+            var i = 0
+            while (i < line.length) {
+                when {
+                    i + 1 < line.length && line.substring(i, i + 2) == "**" && !flB -> {
+                        it.write("<b>")
+                        flB = true
+                        i += 2
+                    }
+
+                    i + 1 < line.length && line.substring(i, i + 2) == "**" -> {
+                        it.write("</b>")
+                        flB = false
+                        i += 2
+                    }
+
+                    i + 1 < line.length && line.substring(i, i + 2) == "~~" && !flS -> {
+                        it.write("<s>")
+                        flS = true
+                        i += 2
+                    }
+
+                    i + 1 < line.length && line.substring(i, i + 2) == "~~" -> {
+                        it.write("</s>")
+                        flS = false
+                        i += 2
+                    }
+
+                    line[i] == '*' && !flI -> {
+                        it.write("<i>")
+                        flI = true
+                        i++
+                    }
+
+                    line[i] == '*' -> {
+                        it.write("</i>")
+                        flI = false
+                        i++
+                    }
+
+                    else -> {
+                        it.write(line[i].toString())
+                        i++
+                    }
+                }
+            }
+        }
+        it.write("\n        </p>\n    </body>\n</html>")
+    }
 }
 
 /**
