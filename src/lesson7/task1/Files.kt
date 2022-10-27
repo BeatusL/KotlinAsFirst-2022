@@ -332,15 +332,15 @@ fun markdownToHtmlSimple(inputName: String, outputName: String) {
     var firstLine = true
     File(outputName).bufferedWriter().use {
         it.write("<html>\n    <body>\n        <p>")
+        var flI = false
+        var flB = false
+        var flS = false
         for (line in File(inputName).readLines()) {
             if (line.isEmpty() && !firstLine) {
                 it.write("\n        </p>\n        <p>")
                 continue
             } else it.write("\n")
             firstLine = false
-            var flI = false
-            var flB = false
-            var flS = false
             var i = 0
             while (i < line.length) {
                 when {
