@@ -344,39 +344,22 @@ fun markdownToHtmlSimple(inputName: String, outputName: String) {
             var i = 0
             while (i < line.length) {
                 when {
-                    i + 1 < line.length && line.substring(i, i + 2) == "**" && !flB -> {
-                        it.write("<b>")
-                        flB = true
-                        i += 2
-                    }
-
                     i + 1 < line.length && line.substring(i, i + 2) == "**" -> {
-                        it.write("</b>")
-                        flB = false
-                        i += 2
-                    }
-
-                    i + 1 < line.length && line.substring(i, i + 2) == "~~" && !flS -> {
-                        it.write("<s>")
-                        flS = true
+                        if (flB) it.write("</b>") else it.write("<b>")
+                        flB = !flB
                         i += 2
                     }
 
                     i + 1 < line.length && line.substring(i, i + 2) == "~~" -> {
-                        it.write("</s>")
-                        flS = false
+                        if (flS) it.write("</s>") else it.write("<s>")
+                        flS = !flS
                         i += 2
                     }
 
-                    line[i] == '*' && !flI -> {
-                        it.write("<i>")
-                        flI = true
-                        i++
-                    }
 
                     line[i] == '*' -> {
-                        it.write("</i>")
-                        flI = false
+                        if (flI) it.write("</i>") else it.write("<i>")
+                        flI = !flI
                         i++
                     }
 
