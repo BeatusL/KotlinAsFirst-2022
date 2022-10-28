@@ -330,19 +330,17 @@ Suspendisse ~~et elit in enim tempus iaculis~~.
  */
 fun markdownToHtmlSimple(inputName: String, outputName: String) {
     File(outputName).bufferedWriter().use {
-        it.write("<html>\n    <body>\n        <p>")
-        var firstLine = false
+        it.write("<html><body><p>")
+        var i = 0
         var flI = false
         var flB = false
         var flS = false
         for (line in File(inputName).readLines()) {
-            if (line.isEmpty() && firstLine) {
-                it.write("\n        </p>\n        <p>")
-                firstLine = false
+            if (line.isEmpty() && i > 0) {
+                it.write("</p><p>")
+                i = 0
                 continue
-            } else it.write("\n")
-            firstLine = true
-            var i = 0
+            } else i = 0
             while (i < line.length) {
                 when {
                     i + 1 < line.length && line.substring(i, i + 2) == "**" -> {
@@ -371,7 +369,7 @@ fun markdownToHtmlSimple(inputName: String, outputName: String) {
                 }
             }
         }
-        it.write("\n        </p>\n    </body>\n</html>")
+        it.write("</p></body></html>")
     }
 }
 
