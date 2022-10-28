@@ -329,18 +329,19 @@ Suspendisse ~~et elit in enim tempus iaculis~~.
  * (Отступы и переносы строк в примере добавлены для наглядности, при решении задачи их реализовывать не обязательно)
  */
 fun markdownToHtmlSimple(inputName: String, outputName: String) {
-    var firstLine = true
     File(outputName).bufferedWriter().use {
         it.write("<html>\n    <body>\n        <p>")
+        var firstLine = false
         var flI = false
         var flB = false
         var flS = false
         for (line in File(inputName).readLines()) {
-            if (line.isEmpty() && !firstLine) {
+            if (line.isEmpty() && firstLine) {
                 it.write("\n        </p>\n        <p>")
+                firstLine = false
                 continue
             } else it.write("\n")
-            firstLine = false
+            firstLine = true
             var i = 0
             while (i < line.length) {
                 when {
