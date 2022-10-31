@@ -88,7 +88,7 @@ fun dateStrToDigit(str: String): String {
         )
         val parts = str.split(" ")
         if (parts.size != 3 || check(parts[0].toInt(), months[parts[1]], parts[2].toInt()))
-            throw NumberFormatException()
+            return ""
         String.format("%02d.${months[parts[1]]}.${parts[2].toInt()}", parts[0].toInt())
     } catch (e: NumberFormatException) {
         ""
@@ -120,7 +120,7 @@ fun dateDigitToStr(digital: String): String {
         )
         val parts = digital.split(".")
         if (parts.size != 3 || months[parts[1]] == null || check(parts[0].toInt(), parts[1], parts[2].toInt()))
-            throw NumberFormatException()
+            return ""
         String.format("%d ${months[parts[1]]} %d", parts[0].toInt(), parts[2].toInt())
     } catch (e: NumberFormatException) {
         ""
@@ -141,18 +141,9 @@ fun dateDigitToStr(digital: String): String {
  *
  * PS: Дополнительные примеры работы функции можно посмотреть в соответствующих тестах.
  */
-fun flattenPhoneNumber(phone: String): String {
-    if (!(phone.matches(Regex("(\\+[0-9]+)?[ \\-]*(\\(([ \\-]*[0-9])+\\))?([ \\-]*[0-9])*")))) return ""
-    var ans = ""
-    for (i in phone.indices) {
-        val n = phone[i]
-        if (n !in setOf('(', ')', '-', ' ')) {
-
-            ans += n
-        }
-    }
-    return ans
-}
+fun flattenPhoneNumber(phone: String): String =
+    if (!(phone.matches(Regex("(\\+[0-9]+)?[ \\-]*(\\(([ \\-]*[0-9])+\\))?([ \\-]*[0-9])*")))) ""
+    else Regex("[() -]").replace(phone, "")
 
 
 /**
@@ -220,19 +211,12 @@ fun plusMinus(expression: String): Int {
  */
 fun firstDuplicateIndex(str: String): Int {
     val list = str.split(" ").map { it.uppercase() }
-    var flag = -1
-    var res = -1
+    var res = 0
     for (i in 0 until list.size - 1) {
-        if (list[i] == list[i + 1]) {
-            flag = i
-            break
-        }
+        if (list[i] == list[i + 1]) return res
+        res += list[i].length + 1
     }
-    if (flag > -1) {
-        res = 0
-        for (i in 0 until flag) res += list[i].length + 1
-    }
-    return res
+    return -1
 }
 
 /**
@@ -247,19 +231,9 @@ fun firstDuplicateIndex(str: String): Int {
  * Все цены должны быть больше нуля либо равны нулю.
  */
 fun mostExpensive(description: String): String {
-    val e = Regex("(.+ [0-9]+([.][0-9]+)?; )*.+ [0-9]+([.][0-9]+)?")
-    if (!(description.matches(e))) return ""
-    val list = description.split("; ")
-    var res = ""
-    var maxPrice = -1.0
-    for (element in list) {
-        val price = element.split(" ").last().toDouble()
-        if (price > maxPrice) {
-            res = element.split(" ").first()
-            maxPrice = price
-        }
-    }
-    return res
+    if (!(description.matches(Regex("(.+ [0-9]+([.][0-9]+)?; )*.+ [0-9]+([.][0-9]+)?")))) return ""
+    val map = description.split("; ").map { it.split(" ") }.groupBy { it.last() }
+    return map[map.values.maxOf { it.first().last().toDouble() }.toString()]!!.first().first()
 }
 
 /**
