@@ -92,10 +92,13 @@ fun deleteMarked(inputName: String, outputName: String) {
  *
  */
 fun countSubstrings(inputName: String, substrings: List<String>): Map<String, Int> {
-    val subs = substrings.groupBy({ it.uppercase() }, { it })
     val lengths = substrings.map { it.length }.sorted().toSet()
+    val subs = mutableMapOf<String, Int>()
     val res = mutableMapOf<String, Int>()
-    for (element in substrings) res[element] = 0
+    for (element in substrings) {
+        res[element] = 0
+        subs.putIfAbsent(element.uppercase(), 0)
+    }
     File(inputName).bufferedReader().use {
         for (line in it.readLines()) {
             val lineUpper = line.uppercase()
@@ -103,9 +106,12 @@ fun countSubstrings(inputName: String, substrings: List<String>): Map<String, In
                 for (len in lengths) {
                     if (i + len > lineUpper.length) continue
                     val curSub = lineUpper.substring(i, i + len)
-                    if (curSub in subs) res[subs[curSub]!!.first()] = res[subs[curSub]!!.first()]!! + 1
+                    if (curSub in subs) subs[curSub] = subs[curSub]!! + 1
                 }
             }
+        }
+        for ((key, _) in res) {
+            if (key.uppercase() in subs) res[key] = subs[key.uppercase()]!!
         }
     }
     return res
