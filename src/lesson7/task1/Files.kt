@@ -346,7 +346,10 @@ fun markdownToHtmlSimple(inputName: String, outputName: String) {
                 newParagraph = true
                 continue
             }
-            if (newParagraph) it.write("</p><p>")
+            if (newParagraph) {
+                it.write("</p><p>")
+                newParagraph = false
+            }
             var i = 0
             while (i < line.length) {
                 when {
