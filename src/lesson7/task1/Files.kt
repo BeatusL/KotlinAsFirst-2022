@@ -342,7 +342,7 @@ fun markdownToHtmlSimple(inputName: String, outputName: String) {
         var flB = false
         var flS = false
         for (line in File(inputName).readLines()) {
-            if (line.isEmpty()) {
+            if (line.isEmpty() || line == "\n") {
                 if (emptyLineCount == 0) it.write("</p><p>")
                 emptyLineCount = 1
                 continue
