@@ -337,16 +337,16 @@ Suspendisse ~~et elit in enim tempus iaculis~~.
 fun markdownToHtmlSimple(inputName: String, outputName: String) {
     File(outputName).bufferedWriter().use {
         it.write("<html><body><p>")
-        var emptyLineCount = 1
+        var newParagraph = false
         var flI = false
         var flB = false
         var flS = false
         for (line in File(inputName).readLines()) {
             if (line.isEmpty() || line == "\n") {
-                if (emptyLineCount == 0) it.write("</p><p>")
-                emptyLineCount = 1
+                newParagraph = true
                 continue
-            } else emptyLineCount = 0
+            }
+            if (newParagraph) it.write("</p><p>")
             var i = 0
             while (i < line.length) {
                 when {
@@ -544,6 +544,6 @@ fun printMultiplicationProcess(lhv: Int, rhv: Int, outputName: String) {
  *
  */
 fun printDivisionProcess(lhv: Int, rhv: Int, outputName: String) {
-    TODO()
+
 }
 
