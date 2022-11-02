@@ -337,16 +337,16 @@ Suspendisse ~~et elit in enim tempus iaculis~~.
 fun markdownToHtmlSimple(inputName: String, outputName: String) {
     File(outputName).bufferedWriter().use {
         it.write("<html><body><p>")
-        var countEmptyLines = 0
+        var emptyLineCount = 1
         var flI = false
         var flB = false
         var flS = false
         for (line in File(inputName).readLines()) {
-            if ((line.isEmpty() || line == "\n") && countEmptyLines == 0) {
-                it.write("</p><p>")
-                countEmptyLines = 1
+            if (line.isEmpty()) {
+                if (emptyLineCount == 0) it.write("</p><p>")
+                emptyLineCount = 1
                 continue
-            } else countEmptyLines = 0
+            } else emptyLineCount = 0
             var i = 0
             while (i < line.length) {
                 when {
