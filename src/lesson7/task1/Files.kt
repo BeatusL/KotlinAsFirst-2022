@@ -345,8 +345,7 @@ fun markdownToHtmlSimple(inputName: String, outputName: String) {
             if (line.isEmpty() || line == "\n") {
                 newParagraph = true
                 continue
-            }
-            if (newParagraph) {
+            } else if (newParagraph) {
                 it.write("</p><p>")
                 newParagraph = false
             }
