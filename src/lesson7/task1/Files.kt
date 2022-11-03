@@ -335,6 +335,11 @@ Suspendisse ~~et elit in enim tempus iaculis~~.
  * (Отступы и переносы строк в примере добавлены для наглядности, при решении задачи их реализовывать не обязательно)
  */
 fun markdownToHtmlSimple(inputName: String, outputName: String) {
+    fun isMadeOfWhiteSpaces(s: String): Boolean {
+        var f = true
+        for (i in s) if (!i.isWhitespace()) f = false
+        return f
+    }
     File(outputName).bufferedWriter().use {
         it.write("<html><body><p>")
         var newParagraph = false
@@ -342,10 +347,11 @@ fun markdownToHtmlSimple(inputName: String, outputName: String) {
         var flB = false
         var flS = false
         for (line in File(inputName).readLines()) {
-            if (line.isEmpty() || line == "\n") {
+            if (isMadeOfWhiteSpaces(line) || line == "\n") {
                 newParagraph = true
                 continue
-            } else if (newParagraph) {
+            }
+            if (newParagraph) {
                 it.write("</p><p>")
                 newParagraph = false
             }
