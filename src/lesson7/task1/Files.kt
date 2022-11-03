@@ -348,10 +348,11 @@ fun markdownToHtmlSimple(inputName: String, outputName: String) {
     File(outputName).bufferedWriter().use {
         it.write("<html><body><p>")
         for (line in File(inputName).readLines()) {
-            if (isMadeOfWhiteSpaces(line)) {
+            if (isMadeOfWhiteSpaces(line) && !map["firstLine"]!!) {
                 map["newP"] = true
                 continue
             }
+            map["firstLine"] = false
             map["firstLine"] = false
             if (map["newP"]!!) {
                 it.write("</p><p>")
