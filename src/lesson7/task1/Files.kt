@@ -340,40 +340,42 @@ fun markdownToHtmlSimple(inputName: String, outputName: String) {
         for (i in s) if (!i.isWhitespace()) f = false
         return f
     }
+
+    val map = mutableMapOf(
+        "I" to false, "B" to false, "S" to false,
+        "newP" to false, "firstLine" to true
+    )
     File(outputName).bufferedWriter().use {
         it.write("<html><body><p>")
-        var newParagraph = false
-        var flI = false
-        var flB = false
-        var flS = false
         for (line in File(inputName).readLines()) {
-            if (isMadeOfWhiteSpaces(line) || line == "\n") {
-                newParagraph = true
+            if (isMadeOfWhiteSpaces(line)) {
+                map["newP"] = true
                 continue
             }
-            if (newParagraph) {
+            map["firstLine"] = false
+            if (map["newP"]!!) {
                 it.write("</p><p>")
-                newParagraph = false
+                map["newP"] = false
             }
             var i = 0
             while (i < line.length) {
                 when {
                     i + 1 < line.length && line.substring(i, i + 2) == "**" -> {
-                        if (flB) it.write("</b>") else it.write("<b>")
-                        flB = !flB
+                        if (map["B"]!!) it.write("</b>") else it.write("<b>")
+                        map["B"] = !map["B"]!!
                         i += 2
                     }
 
                     i + 1 < line.length && line.substring(i, i + 2) == "~~" -> {
-                        if (flS) it.write("</s>") else it.write("<s>")
-                        flS = !flS
+                        if (map["S"]!!) it.write("</s>") else it.write("<s>")
+                        map["S"] = !map["S"]!!
                         i += 2
                     }
 
 
                     line[i] == '*' -> {
-                        if (flI) it.write("</i>") else it.write("<i>")
-                        flI = !flI
+                        if (map["I"]!!) it.write("</i>") else it.write("<i>")
+                        map["I"] = !map["I"]!!
                         i++
                     }
 
