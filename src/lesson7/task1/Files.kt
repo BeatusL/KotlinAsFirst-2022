@@ -297,8 +297,10 @@ fun chooseLongestChaoticWord(inputName: String, outputName: String) {
             }
         }
     }
-    val maxlen = set.maxOf { it.length }
-    File(outputName).bufferedWriter().use { it.write(set.filter { a -> a.length == maxlen }.joinToString(", ")) }
+    if (set.isNotEmpty()) {
+        val maxlen = set.maxOf { it.length }
+        File(outputName).bufferedWriter().use { it.write(set.filter { a -> a.length == maxlen }.joinToString(", ")) }
+    } else File(outputName).bufferedWriter().use { it.write("") }
 }
 
 
