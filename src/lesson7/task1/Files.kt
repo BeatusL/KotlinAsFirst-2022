@@ -335,12 +335,6 @@ Suspendisse ~~et elit in enim tempus iaculis~~.
  * (Отступы и переносы строк в примере добавлены для наглядности, при решении задачи их реализовывать не обязательно)
  */
 fun markdownToHtmlSimple(inputName: String, outputName: String) {
-    fun isMadeOfWhiteSpaces(s: String): Boolean {
-        var f = true
-        for (i in s) if (!i.isWhitespace()) f = false
-        return f
-    }
-
     val map = mutableMapOf(
         "I" to false, "B" to false, "S" to false,
         "newP" to false, "firstLine" to true
@@ -388,6 +382,12 @@ fun markdownToHtmlSimple(inputName: String, outputName: String) {
         }
         it.write("</p></body></html>")
     }
+}
+
+fun isMadeOfWhiteSpaces(s: String): Boolean {
+    var f = true
+    for (i in s) if (!i.isWhitespace()) f = false
+    return f
 }
 
 /**
@@ -488,7 +488,9 @@ fun markdownToHtmlSimple(inputName: String, outputName: String) {
  * (Отступы и переносы строк в примере добавлены для наглядности, при решении задачи их реализовывать не обязательно)
  */
 fun markdownToHtmlLists(inputName: String, outputName: String) {
-    TODO()
+    File(outputName).bufferedWriter().use {
+        it.write("<html><body><p>") ///хочу на тест посмотреть
+    }
 }
 
 /**
