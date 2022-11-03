@@ -232,8 +232,10 @@ fun firstDuplicateIndex(str: String): Int {
  */
 fun mostExpensive(description: String): String {
     if (!(description.matches(Regex("(.+ [0-9]+([.][0-9]+)?; )*.+ [0-9]+([.][0-9]+)?")))) return ""
-    val map = description.split("; ").map { it.split(" ") }.groupBy { it.last() }
-    return map[map.values.maxOf { it.first().last().toDouble() }.toString()]!!.first().first()
+    val list = description.split("; ").map { it.split(" ") }
+    val maxPrice = list.maxOf { it[1].toDouble() }
+    for (s in list) if (s[1].toDouble() == maxPrice) return s[0]
+    return ""
 }
 
 /**
