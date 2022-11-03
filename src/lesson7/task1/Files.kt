@@ -286,8 +286,21 @@ fun transliterate(inputName: String, dictionary: Map<Char, String>, outputName: 
  * Обратите внимание: данная функция не имеет возвращаемого значения
  */
 fun chooseLongestChaoticWord(inputName: String, outputName: String) {
-    TODO()
+    val set = mutableSetOf<String>()
+    val setupper = mutableSetOf<String>()
+    File(inputName).bufferedReader().use {
+        for (line in it.readLines()) {
+            val lineupper = line.uppercase()
+            if (lineupper.toSet().size == line.length && lineupper !in setupper) {
+                set.add(line)
+                setupper.add(lineupper)
+            }
+        }
+    }
+    val maxlen = set.maxOf { it.length }
+    File(outputName).bufferedWriter().use { it.write(set.filter { a -> a.length == maxlen }.joinToString(", ")) }
 }
+
 
 /**
  * Сложная (22 балла)
@@ -489,7 +502,8 @@ fun isMadeOfWhiteSpaces(s: String): Boolean {
  */
 fun markdownToHtmlLists(inputName: String, outputName: String) {
     File(outputName).bufferedWriter().use {
-        it.write("<html><body><p>") ///хочу на тест посмотреть
+        it.write("<html><body><p>")
+
     }
 }
 
