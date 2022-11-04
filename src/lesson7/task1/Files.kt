@@ -3,6 +3,7 @@
 package lesson7.task1
 
 import java.io.File
+import lesson3.task1.digitNumber
 
 // Урок 7: работа с файлами
 // Урок интегральный, поэтому его задачи имеют сильно увеличенную стоимость
@@ -543,7 +544,24 @@ fun markdownToHtml(inputName: String, outputName: String) {
  *
  */
 fun printMultiplicationProcess(lhv: Int, rhv: Int, outputName: String) {
-    TODO()
+    val lineLength = digitNumber(rhv) + digitNumber(lhv)
+    File(outputName).bufferedWriter().use {
+        it.write(
+            "${" ".repeat(digitNumber(rhv))}$lhv\n" +
+                    "*${" ".repeat(digitNumber(lhv) - 1)}$rhv\n" +
+                    "-".repeat(lineLength)
+        )
+        for (i in 0 until digitNumber(rhv)) {
+            val ni = digitNumber(rhv) - i - 1
+            val mResult = rhv.toString()[ni].toString().toInt() * lhv
+            if (i == 0) {
+                it.write("\n${" ".repeat(ni + 1)}$mResult")
+            } else it.write("\n+${" ".repeat(ni)}$mResult")
+        }
+        it.write("\n${"-".repeat(lineLength)}" +
+                    "\n${" ".repeat(lineLength - digitNumber(rhv * lhv))}${rhv * lhv}"
+        )
+    }
 }
 
 
