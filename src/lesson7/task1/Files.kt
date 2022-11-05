@@ -587,7 +587,7 @@ fun printMultiplicationProcess(lhv: Int, rhv: Int, outputName: String) {
 fun printDivisionProcess(lhv: Int, rhv: Int, outputName: String) {
     File(outputName).bufferedWriter().use {
         it.write(" $lhv | $rhv\n")
-        var curlhv = 0
+        var curlhv = lhv
         var curIndex = digitNumber(lhv)
         for (i in lhv.toString().indices) {
             if (lhv.toString().substring(0, i + 1).toInt() >= rhv) {
