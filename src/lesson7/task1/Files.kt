@@ -625,7 +625,7 @@ fun printDivisionProcess(lhv: Int, rhv: Int, outputName: String) {
             )
             curIndex++
         }
-        it.write("\n${" ".repeat(curIndex)}${lhv - (lhv / rhv * rhv)}")
+        it.write("\n${" ".repeat(curIndex - digitNumber(lhv - (lhv / rhv * rhv)) + 1)}${lhv - (lhv / rhv * rhv)}")
     }
 }
 
