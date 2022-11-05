@@ -597,7 +597,7 @@ fun printDivisionProcess(lhv: Int, rhv: Int, outputName: String) {
             }
         }
         var currhv = (curlhv / rhv) * rhv
-        if (lhv > rhv || curIndex == 1) {
+        if (lhv >= rhv || curIndex == 1) {
             it.write(
                 " $lhv | $rhv\n" +
                         "-${currhv}${" ".repeat(digitNumber(lhv) - digitNumber(currhv))}   ${lhv / rhv}\n" +
