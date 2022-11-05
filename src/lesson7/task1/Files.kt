@@ -4,6 +4,8 @@ package lesson7.task1
 
 import java.io.File
 import lesson3.task1.digitNumber
+import kotlin.math.max
+import kotlin.math.min
 
 // Урок 7: работа с файлами
 // Урок интегральный, поэтому его задачи имеют сильно увеличенную стоимость
@@ -500,10 +502,7 @@ fun isMadeOfWhiteSpaces(s: String): Boolean {
  * (Отступы и переносы строк в примере добавлены для наглядности, при решении задачи их реализовывать не обязательно)
  */
 fun markdownToHtmlLists(inputName: String, outputName: String) {
-    File(outputName).bufferedWriter().use {
-        it.write("<html><body><p>")
-
-    }
+    TODO()
 }
 
 /**
@@ -586,6 +585,47 @@ fun printMultiplicationProcess(lhv: Int, rhv: Int, outputName: String) {
  *
  */
 fun printDivisionProcess(lhv: Int, rhv: Int, outputName: String) {
-    TODO()
+    File(outputName).bufferedWriter().use {
+        it.write(" $lhv | $rhv\n")
+        var curlhv = 0
+        var curIndex = 0
+        for (i in lhv.toString().indices) {
+            if (lhv.toString().substring(0, i + 1).toInt() >= rhv) {
+                curlhv = lhv.toString().substring(0, i + 1).toInt()
+                curIndex = i
+                break
+            }
+        }
+        var currhv = (curlhv / rhv) * rhv
+        it.write(
+            "-${currhv}${" ".repeat(digitNumber(lhv) - digitNumber(currhv))}   ${lhv / rhv}\n" +
+                    "-".repeat(digitNumber(currhv) + 1)
+        )
+        curIndex++
+        while (curIndex < digitNumber(lhv)) {
+            curlhv = "${(curlhv - currhv)}${lhv.toString()[curIndex]}".toInt()
+            currhv = (curlhv / rhv) * rhv
+            it.write(
+                "\n${" ".repeat(curIndex - max(digitNumber(curlhv), 2) + 2)}" +
+                        (if (curlhv / 10 == 0) "0$curlhv" else "$curlhv") +
+                        "\n${" ".repeat(curIndex - digitNumber(currhv) + 1)}-$currhv" +
+                        "\n${
+                            " ".repeat(
+                                min(
+                                    (curIndex - digitNumber(curlhv) + 2),
+                                    (curIndex - digitNumber(currhv) + 1)
+                                )
+                            ) + "-".repeat(
+                                max(
+                                    digitNumber(curlhv),
+                                    digitNumber(currhv) + 1
+                                )
+                            )
+                        }"
+            )
+            curIndex++
+        }
+        it.write("\n${" ".repeat(curIndex)}${lhv - (lhv / rhv * rhv)}")
+    }
 }
 
