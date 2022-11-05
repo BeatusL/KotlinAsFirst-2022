@@ -587,7 +587,7 @@ fun printMultiplicationProcess(lhv: Int, rhv: Int, outputName: String) {
 fun printDivisionProcess(lhv: Int, rhv: Int, outputName: String) {
     File(outputName).bufferedWriter().use {
         var curlhv = lhv
-        var curIndex = digitNumber(lhv)
+        var curIndex = digitNumber(lhv) - 1
         var addWhitespace = 1
         for (i in lhv.toString().indices) {
             if (lhv.toString().substring(0, i + 1).toInt() >= rhv) {
@@ -597,21 +597,21 @@ fun printDivisionProcess(lhv: Int, rhv: Int, outputName: String) {
             }
         }
         var currhv = (curlhv / rhv) * rhv
-        if (lhv >= rhv || curIndex == 1) {
+        if (curIndex < digitNumber(currhv)) {
             it.write(
                 " $lhv | $rhv\n" +
                         "-${currhv}${" ".repeat(digitNumber(lhv) - digitNumber(currhv))}   ${lhv / rhv}\n" +
                         "-".repeat(digitNumber(currhv) + 1)
             )
-            curIndex = if (curIndex == digitNumber(lhv)) curIndex else curIndex + 1
         } else {
             it.write(
                 "$lhv | $rhv\n" +
-                        "${" ".repeat(curIndex - 2)}-0   0\n" +
-                        "-".repeat(curIndex)
+                        "${" ".repeat(curIndex - digitNumber(currhv))}-$currhv   ${lhv / rhv}\n" +
+                        "-".repeat(curIndex + 1)
             )
             addWhitespace = 0
         }
+        curIndex++
         while (curIndex < digitNumber(lhv)) {
             curlhv = "${(curlhv - currhv)}${lhv.toString()[curIndex]}".toInt()
             currhv = (curlhv / rhv) * rhv
