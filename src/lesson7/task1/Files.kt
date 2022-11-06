@@ -606,8 +606,8 @@ fun printDivisionProcess(lhv: Int, rhv: Int, outputName: String) {
         } else {
             it.write(
                 "$lhv | $rhv\n" +
-                        "${" ".repeat(curIndex - digitNumber(currhv))}-$currhv   ${lhv / rhv}\n" +
-                        "-".repeat(curIndex + 1)
+                        "${" ".repeat(curIndex - digitNumber(currhv))}-$currhv${" ".repeat(digitNumber(lhv) - curIndex + 2)}" +
+                        "${lhv / rhv}\n${"-".repeat(curIndex + 1)}"
             )
             addWhitespace = 0
         }
@@ -616,15 +616,15 @@ fun printDivisionProcess(lhv: Int, rhv: Int, outputName: String) {
             curlhv = "${(curlhv - currhv)}${lhv.toString()[curIndex]}".toInt()
             currhv = (curlhv / rhv) * rhv
             it.write(
-                "\n${" ".repeat(curIndex - max(digitNumber(curlhv), 2) + 2)}" +
+                "\n${" ".repeat(curIndex - max(digitNumber(curlhv), 2) + 1 + addWhitespace)}" +
                         (if (curlhv / 10 == 0) "0$curlhv" else "$curlhv") +
-                        "\n${" ".repeat(curIndex - digitNumber(currhv) + 1)}-$currhv" +
+                        "\n${" ".repeat(curIndex - digitNumber(currhv) + addWhitespace)}-$currhv" +
                         "\n${
                             " ".repeat(
                                 min(
-                                    (curIndex - digitNumber(curlhv) + 2),
-                                    (curIndex - digitNumber(currhv) + 1)
-                                )
+                                    (curIndex - digitNumber(curlhv) + 1),
+                                    (curIndex - digitNumber(currhv))
+                                ) + addWhitespace
                             ) + "-".repeat(
                                 max(
                                     digitNumber(curlhv),
