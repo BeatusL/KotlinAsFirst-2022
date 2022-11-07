@@ -545,7 +545,7 @@ fun markdownToHtml(inputName: String, outputName: String) {
 fun printMultiplicationProcess(lhv: Int, rhv: Int, outputName: String) {
     val lhvLength = digitNumber(lhv)
     val rhvLength = digitNumber(rhv)
-    val lineLength = rhvLength + lhvLength + if (lhvLength < rhvLength) 1 else 0
+    val lineLength = digitNumber(rhv * lhv) + 1
     File(outputName).bufferedWriter().use {
         it.write(
             "${" ".repeat(lineLength - lhvLength)}$lhv\n" +
@@ -560,7 +560,7 @@ fun printMultiplicationProcess(lhv: Int, rhv: Int, outputName: String) {
             } else it.write("\n+${" ".repeat(ni)}$mResult")
         }
         it.write("\n${"-".repeat(lineLength)}" +
-                    "\n${" ".repeat(lineLength - digitNumber(rhv * lhv))}${rhv * lhv}"
+                    "\n ${rhv * lhv}"
         )
     }
 }
