@@ -110,21 +110,18 @@ fun check(day: Int, month: String?, year: Int): Boolean =
  * Обратите внимание: некорректная с точки зрения календаря дата (например, 30 февраля 2009) считается неверными
  * входными данными.
  */
-fun dateDigitToStr(digital: String): String {
-    return try {
-        val months = mapOf(
-            "01" to "января", "02" to "февраля", "03" to "марта",
-            "04" to "апреля", "05" to "мая", "06" to "июня",
-            "07" to "июля", "08" to "августа", "09" to "сентября",
-            "10" to "октября", "11" to "ноября", "12" to "декабря"
-        )
-        val parts = digital.split(".")
-        if (parts.size != 3 || months[parts[1]] == null || check(parts[0].toInt(), parts[1], parts[2].toInt()))
-            return ""
-        String.format("%d ${months[parts[1]]} %d", parts[0].toInt(), parts[2].toInt())
-    } catch (e: NumberFormatException) {
-        ""
-    }
+fun dateDigitToStr(digital: String): String = try {
+    val months = mapOf(
+        "01" to "января", "02" to "февраля", "03" to "марта",
+        "04" to "апреля", "05" to "мая", "06" to "июня",
+        "07" to "июля", "08" to "августа", "09" to "сентября",
+        "10" to "октября", "11" to "ноября", "12" to "декабря"
+    )
+    val parts = digital.split(".")
+    if (parts.size != 3 || months[parts[1]] == null || check(parts[0].toInt(), parts[1], parts[2].toInt())) ""
+    else String.format("%d ${months[parts[1]]} %d", parts[0].toInt(), parts[2].toInt())
+} catch (e: NumberFormatException) {
+    ""
 }
 
 /**
@@ -142,7 +139,7 @@ fun dateDigitToStr(digital: String): String {
  * PS: Дополнительные примеры работы функции можно посмотреть в соответствующих тестах.
  */
 fun flattenPhoneNumber(phone: String): String =
-    if (!(phone.matches(Regex("(\\+[0-9]+)?[ \\-]*(\\(([ \\-]*[0-9])+\\))?([ \\-]*[0-9])*")))) ""
+    if (!(phone.matches(Regex("(\\+\\d+)?[ \\-]*(\\(([ \\-]*\\d)+\\))?([ \\-]*\\d)*")))) ""
     else Regex("[() -]").replace(phone, "")
 
 
@@ -157,7 +154,7 @@ fun flattenPhoneNumber(phone: String): String =
  * При нарушении формата входной строки или при отсутствии в ней чисел, вернуть -1.
  */
 fun bestLongJump(jumps: String): Int {
-    if (!(jumps.matches(Regex("([0-9]+|[%-])( ([0-9]+|[%-]))*")))) return -1
+    if (!(jumps.matches(Regex("(\\d+|[%-])( (\\d+|[%-]))*")))) return -1
     val results = jumps.split(' ').filter { it != "%" && it != "-" }.map { it.toInt() }
     return if (results.isNotEmpty()) results.max() else -1
 }
@@ -174,8 +171,8 @@ fun bestLongJump(jumps: String): Int {
  * вернуть -1.
  */
 fun bestHighJump(jumps: String): Int =
-    if (!(jumps.matches(Regex("([0-9]+ [+%-]+ )*[0-9]+ [+%-]+")))) -1
-    else Regex("([0-9]+ [%\\-]+ )|([%\\-+ ])").split("$jumps ").max().toInt()
+    if (!(jumps.matches(Regex("(\\d+ [+%-]+ )*\\d+ [+%-]+")))) -1
+    else Regex("(\\d+ [%\\-]+ )|([%\\-+ ])").split("$jumps ").max().toInt()
 
 /**
  * Сложная (6 баллов)
@@ -187,7 +184,7 @@ fun bestHighJump(jumps: String): Int =
  * Про нарушении формата входной строки бросить исключение IllegalArgumentException
  */
 fun plusMinus(expression: String): Int {
-    if (!(expression.matches(Regex("([0-9]+ [+-] )*[0-9]+")))) throw IllegalArgumentException()
+    if (!(expression.matches(Regex("(\\d+ [+-] )*\\d+")))) throw IllegalArgumentException()
     val exp = expression.split(" ")
     var res = exp[0].toInt()
     for (i in 1 until exp.size step 2) {
@@ -230,13 +227,10 @@ fun firstDuplicateIndex(str: String): Int {
  * или пустую строку при нарушении формата строки.
  * Все цены должны быть больше нуля либо равны нулю.
  */
-fun mostExpensive(description: String): String {
-    if (!(description.matches(Regex("(.+ [0-9]+([.][0-9]+)?; )*.+ [0-9]+([.][0-9]+)?")))) return ""
-    val list = description.split("; ").map { it.split(" ") }
-    val maxPrice = list.maxOf { it[1].toDouble() }
-    for (s in list) if (s[1].toDouble() == maxPrice) return s[0]
-    return ""
-}
+fun mostExpensive(description: String): String =
+    if (!(description.matches(Regex("(.+ \\d+([.]\\d+)?; )*.+ \\d+([.]\\d+)?")))) ""
+    else description.split("; ").map { it.split(" ") }.maxBy { it.last().toDouble() }.first()
+
 
 /**
  * Сложная (6 баллов)
