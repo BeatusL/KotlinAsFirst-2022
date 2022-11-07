@@ -556,8 +556,8 @@ fun printMultiplicationProcess(lhv: Int, rhv: Int, outputName: String) {
             val ni = rhvLength - i - 1
             val mResult = rhv.toString()[ni].toString().toInt() * lhv
             if (i == 0) {
-                it.write("\n${" ".repeat(ni + 1)}$mResult")
-            } else it.write("\n+${" ".repeat(ni)}$mResult")
+                it.write("\n${" ".repeat(lineLength - digitNumber(mResult))}$mResult")
+            } else it.write("\n+${" ".repeat(lineLength - digitNumber(mResult) - i - 1)}$mResult")
         }
         it.write("\n${"-".repeat(lineLength)}" +
                     "\n ${rhv * lhv}"
