@@ -66,22 +66,16 @@ fun alignFile(inputName: String, lineLength: Int, outputName: String) {
  * Подчёркивание в середине и/или в конце строк значения не имеет.
  */
 fun deleteMarked(inputName: String, outputName: String) {
-    File(outputName).bufferedWriter().use {
-        var fl = true
-        for (line in File(inputName).readLines()) {
-            when {
-                line.isEmpty() -> it.newLine()
-                line[0] != '_' && fl -> {
-                    it.write(line)
-                    fl = false
-                }
-
-                line[0] != '_' -> {
-                    it.newLine()
-                    it.write(line)
-                }
-            }
+    val strings = mutableListOf<String>()
+    for (line in File(inputName).readLines()) {
+        when {
+            line.isEmpty() || isMadeOfWhiteSpaces(line) -> strings.add("")
+            line[0] != '_' -> strings.add(line)
         }
+    }
+    File(outputName).bufferedWriter().use {
+        it.write(strings[0])
+        for (i in 1 until strings.size) it.write("\n${strings[i]}")
     }
 }
 
@@ -261,7 +255,7 @@ fun top20Words(inputName: String): Map<String, Int> = TODO()
  * Обратите внимание: данная функция не имеет возвращаемого значения
  */
 fun transliterate(inputName: String, dictionary: Map<Char, String>, outputName: String) {
-    File(outputName).bufferedWriter()
+    TODO()
 }
 
 /**
@@ -289,16 +283,16 @@ fun transliterate(inputName: String, dictionary: Map<Char, String>, outputName: 
  * Обратите внимание: данная функция не имеет возвращаемого значения
  */
 fun chooseLongestChaoticWord(inputName: String, outputName: String) {
-    val set = mutableSetOf<String>()
+    val list = mutableListOf<String>()
     File(inputName).bufferedReader().use {
         for (line in it.readLines()) {
             val lineupper = line.uppercase()
-            if (lineupper.toSet().size == line.length) set.add(line)
+            if (lineupper.toSet().size == line.length) list.add(line)
         }
     }
-    if (set.isNotEmpty()) {
-        val maxlen = set.maxOf { it.length }
-        File(outputName).bufferedWriter().use { it.write(set.filter { a -> a.length == maxlen }.joinToString(", ")) }
+    if (list.isNotEmpty()) {
+        val maxlen = list.maxOf { it.length }
+        File(outputName).bufferedWriter().use { it.write(list.filter { a -> a.length == maxlen }.joinToString(", ")) }
     } else File(outputName).bufferedWriter().use { it.write("") }
 }
 
