@@ -3,6 +3,11 @@
 package lesson8.task1
 
 import lesson1.task1.sqr
+import ru.spbstu.wheels.deque
+import sun.font.TrueTypeFont
+import java.util.*
+import kotlin.Comparator
+import kotlin.NoSuchElementException
 import kotlin.math.*
 
 // Урок 8: простые классы
@@ -18,6 +23,15 @@ data class Point(val x: Double, val y: Double) {
      * Рассчитать (по известной формуле) расстояние между двумя точками
      */
     fun distance(other: Point): Double = sqrt(sqr(x - other.x) + sqr(y - other.y))
+
+    fun isLess(other: Point): Boolean {
+        return when {
+            (this.y < other.y) -> true
+            (this.y > other.y) -> false
+            (this.x < other.x) -> true
+            else -> false
+        }
+    }
 }
 
 /**
@@ -106,7 +120,69 @@ data class Segment(val begin: Point, val end: Point) {
  * Дано множество точек. Вернуть отрезок, соединяющий две наиболее удалённые из них.
  * Если в множестве менее двух точек, бросить IllegalArgumentException
  */
-fun diameter(vararg points: Point): Segment = TODO()
+fun diameter(vararg points: Point): Segment {
+    TODO()
+}
+
+
+fun orientation(triangle: Triangle): Int {
+    val area = ((triangle.a.y - triangle.b.y) * (triangle.b.x - triangle.c.x) -
+            (triangle.b.y - triangle.c.y) * (triangle.a.x - triangle.b.x))
+    return when{
+        (area > 0) -> 1
+        (area < 0) -> 2
+        else -> 0
+    }
+}
+
+fun compare(point1: Point, point2: Point): Int {
+    val point0 = Point(0.0, 0.0)
+    val orientation = orientation(Triangle(point0, point1, point2))
+    return if (orientation == 0) {
+        if (point0.distance(point2) >= point0.distance(point1)) -1
+        else 1
+    } else {
+        if (orientation == 2) -1
+        else 1
+    }
+}
+
+fun convexHull(points: MutableList<Point>): List<Point> {
+    val point0 = Point(0.0, 0.0)
+    var mPoint = Point(Double.MAX_VALUE, Double.MAX_VALUE)
+    var index = -1
+    for (i in points.indices) {
+        if (points[i].isLess(mPoint)) {
+            mPoint = points[i]
+            index = i
+        }
+    }
+    points[index] = points[0]
+    points[0] = mPoint
+    points.sortWith { point, point2 -> compare(point, point2) }
+
+    var m = 1
+    var i = 1
+    while (i < points.size - 1) {
+        while ((i < points.size - 1) && (orientation(Triangle(point0, points[i], points[i + 1])) == 0)) i++
+        points[m] = points[i]
+        m++
+        i++
+    }
+    if (m < 3) throw Exception(NoSuchElementException())
+
+    val list = mutableListOf(points[0], points[1], points[2])
+
+    i = 3
+    while (i < m) {
+        val n = list.size
+        while (!(list.size < 2 || orientation(Triangle(list[n - 2], list[n - 1], points[i])) == 2)) list.removeLast()
+        list.add(0, points[i])
+        i++
+    }
+    return list
+}
+
 
 /**
  * Простая (2 балла)
@@ -114,7 +190,13 @@ fun diameter(vararg points: Point): Segment = TODO()
  * Построить окружность по её диаметру, заданному двумя точками
  * Центр её должен находиться посередине между точками, а радиус составлять половину расстояния между ними
  */
-fun circleByDiameter(diameter: Segment): Circle = TODO()
+fun circleByDiameter(diameter: Segment): Circle = Circle(
+    Point(
+        (diameter.begin.x + diameter.end.x) / 2.0,
+        (diameter.begin.y + diameter.end.y) / 2.0
+    ),
+    sqrt((diameter.begin.x - diameter.end.x).pow(2) + (diameter.begin.y - diameter.end.y).pow(2)) / 2.0
+)
 
 /**
  * Прямая, заданная точкой point и углом наклона angle (в радианах) по отношению к оси X.
@@ -153,21 +235,41 @@ class Line private constructor(val b: Double, val angle: Double) {
  *
  * Построить прямую по отрезку
  */
-fun lineBySegment(s: Segment): Line = TODO()
+fun lineBySegment(s: Segment): Line {
+    val dx = s.end.x - s.begin.x
+    val dy = s.end.y - s.begin.y
+    var k = dy / dx
+    return when {
+        (dx == 0.0) -> Line(Point(s.begin.x, s.begin.y), PI / 2.0)
+        (atan(k) < 0) -> Line(Point(s.begin.x, s.begin.y), atan(k) + PI)
+        (atan(k) >= PI) -> Line(Point(s.begin.x, s.begin.y), atan(k) - PI)
+        else -> Line(Point(s.begin.x, s.begin.y), atan(k))
+    }
+}
 
 /**
  * Средняя (3 балла)
  *
  * Построить прямую по двум точкам
  */
-fun lineByPoints(a: Point, b: Point): Line = TODO()
+fun lineByPoints(a: Point, b: Point): Line = lineBySegment(Segment(a, b))
 
 /**
  * Сложная (5 баллов)
  *
  * Построить серединный перпендикуляр по отрезку или по двум точкам
  */
-fun bisectorByPoints(a: Point, b: Point): Line = TODO()
+fun bisectorByPoints(a: Point, b: Point): Line {
+    val dx = b.x - a.x
+    val dy = b.y - a.y
+    val angle = atan(-1 / (dy / dx))
+    return when {
+        (dx == 0.0) -> Line(Point(a.x + dx / 2.0, a.y + dy / 2.0), 0.0)
+        (angle < 0) -> Line(Point(a.x + dx / 2.0, a.y + dy / 2.0), angle + PI)
+        (angle >= PI) -> Line(Point(a.x + dx / 2.0, a.y + dy / 2.0), angle - PI)
+        else -> Line(Point(a.x + dx / 2.0, a.y + dy / 2.0), angle)
+    }
+}
 
 /**
  * Средняя (3 балла)
@@ -192,7 +294,13 @@ fun findNearestCirclePair(vararg circles: Circle): Pair<Circle, Circle> = TODO()
  * (построить окружность по трём точкам, или
  * построить окружность, описанную вокруг треугольника - эквивалентная задача).
  */
-fun circleByThreePoints(a: Point, b: Point, c: Point): Circle = TODO()
+fun circleByThreePoints(a: Point, b: Point, c: Point): Circle {
+    val ab = a.distance(b)
+    val bc = b.distance(c)
+    val ca = c.distance(a)
+    val r = ab * bc * ca / sqrt((ab + bc + ca) * (-ab + bc + ca) * (ab - bc + ca) * (ab + bc - ca))
+    return Circle(Point(0.0, 0.0), 0.0)
+}
 
 /**
  * Очень сложная (10 баллов)
