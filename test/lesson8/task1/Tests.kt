@@ -167,13 +167,13 @@ class Tests {
     @Tag("Example")
     fun convexHull() {
         assertEquals(
-            listOf(
+            setOf(
                 Point(0.0, 3.0),
                 Point(4.0, 4.0),
                 Point(3.0, 1.0),
                 Point(0.0, 0.0)
             ),
-            lesson8.task1.convexHull(
+            convexHull(
                 mutableListOf(
                     Point(0.0, 3.0), Point(1.0, 1.0), Point(2.0, 2.0),
                     Point(4.0, 4.0), Point(0.0, 0.0), Point(1.0, 2.0), Point(3.0, 1.0), Point(3.0, 3.0)

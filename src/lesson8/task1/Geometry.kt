@@ -3,11 +3,6 @@
 package lesson8.task1
 
 import lesson1.task1.sqr
-import ru.spbstu.wheels.deque
-import sun.font.TrueTypeFont
-import java.util.*
-import kotlin.Comparator
-import kotlin.NoSuchElementException
 import kotlin.math.*
 
 // Урок 8: простые классы
@@ -24,14 +19,7 @@ data class Point(val x: Double, val y: Double) {
      */
     fun distance(other: Point): Double = sqrt(sqr(x - other.x) + sqr(y - other.y))
 
-    fun isLess(other: Point): Boolean {
-        return when {
-            (this.y < other.y) -> true
-            (this.y > other.y) -> false
-            (this.x < other.x) -> true
-            else -> false
-        }
-    }
+    fun isLess(other: Point): Boolean = (this.y < other.y) || (this.y == other.y && this.x < other.x)
 }
 
 /**
@@ -124,11 +112,12 @@ fun diameter(vararg points: Point): Segment {
     TODO()
 }
 
+fun sqDist(point1: Point, point2: Point) = (point1.x - point2.x) * (point1.x - point2.x) +
+        (point1.y - point2.y) * (point1.y - point2.y)
 
-fun orientation(triangle: Triangle): Int {
-    val area = ((triangle.a.y - triangle.b.y) * (triangle.b.x - triangle.c.x) -
-            (triangle.b.y - triangle.c.y) * (triangle.a.x - triangle.b.x))
-    return when{
+fun orientation(a: Point, b: Point, c: Point): Int {
+    val area = ((b.y - a.y) * (c.x - b.x) - (b.x - a.x) * (c.y - b.y))
+    return when {
         (area > 0) -> 1
         (area < 0) -> 2
         else -> 0
@@ -137,50 +126,44 @@ fun orientation(triangle: Triangle): Int {
 
 fun compare(point1: Point, point2: Point): Int {
     val point0 = Point(0.0, 0.0)
-    val orientation = orientation(Triangle(point0, point1, point2))
+    val orientation = orientation(point0, point1, point2)
     return if (orientation == 0) {
-        if (point0.distance(point2) >= point0.distance(point1)) -1
+        if (sqDist(point0, point2) >= sqDist(point0, point1)) -1
         else 1
     } else {
-        if (orientation == 2) -1
+        val i = if (orientation == 2) -1
         else 1
+        i
     }
 }
 
-fun convexHull(points: MutableList<Point>): List<Point> {
+fun convexHull(points: MutableList<Point>): Set<Point> {
     val point0 = Point(0.0, 0.0)
     var mPoint = Point(Double.MAX_VALUE, Double.MAX_VALUE)
     var index = -1
-    for (i in points.indices) {
-        if (points[i].isLess(mPoint)) {
-            mPoint = points[i]
-            index = i
-        }
+    for (i in points.indices) if (points[i].isLess(mPoint)) {
+        mPoint = points[i]
+        index = i
     }
     points[index] = points[0]
     points[0] = mPoint
     points.sortWith { point, point2 -> compare(point, point2) }
 
-    var m = 1
-    var i = 1
-    while (i < points.size - 1) {
-        while ((i < points.size - 1) && (orientation(Triangle(point0, points[i], points[i + 1])) == 0)) i++
-        points[m] = points[i]
-        m++
-        i++
+    val list = mutableListOf(points[0])
+    for (i in 1 until points.size) {
+        if ((i < points.size - 1) && (orientation(point0, points[i], points[i + 1]) == 0)) continue
+        list.add(points[i])
     }
-    if (m < 3) throw Exception(NoSuchElementException())
+    println(list)
+    if (list.size < 3) throw Exception(NoSuchElementException())
 
-    val list = mutableListOf(points[0], points[1], points[2])
-
-    i = 3
-    while (i < m) {
-        val n = list.size
-        while (!(list.size < 2 || orientation(Triangle(list[n - 2], list[n - 1], points[i])) == 2)) list.removeLast()
-        list.add(0, points[i])
-        i++
+    val res = mutableListOf(points[0], points[1], points[2])
+    for (i in 3 until list.size) {
+        val n = res.size
+        while (n > 1 && orientation(res[n - 2], res[n - 1], list[i]) != 2) res.removeLast()
+        res.add(0, list[i])
     }
-    return list
+    return res.toSet()
 }
 
 
@@ -238,7 +221,7 @@ class Line private constructor(val b: Double, val angle: Double) {
 fun lineBySegment(s: Segment): Line {
     val dx = s.end.x - s.begin.x
     val dy = s.end.y - s.begin.y
-    var k = dy / dx
+    val k = dy / dx
     return when {
         (dx == 0.0) -> Line(Point(s.begin.x, s.begin.y), PI / 2.0)
         (atan(k) < 0) -> Line(Point(s.begin.x, s.begin.y), atan(k) + PI)
