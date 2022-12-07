@@ -11,7 +11,7 @@ import kotlin.math.*
 /**
  * Точка на плоскости
  */
-data class Point(val x: Double, val y: Double) {
+data class Point(val x: Double, val y: Double): Comparable<Point> {
     /**
      * Пример
      *
@@ -20,6 +20,10 @@ data class Point(val x: Double, val y: Double) {
     fun distance(other: Point): Double = sqrt(sqr(x - other.x) + sqr(y - other.y))
 
     fun isLess(other: Point): Boolean = (this.y < other.y) || (this.y == other.y && this.x < other.x)
+    override fun compareTo(other: Point): Int {
+        val yCheck = y.compareTo(other.y)
+        return if (yCheck == 0) x.compareTo(other.x) else yCheck
+    }
 }
 
 /**
@@ -88,7 +92,7 @@ data class Circle(val center: Point, val radius: Double) {
      *
      * Вернуть true, если и только если окружность содержит данную точку НА себе или ВНУТРИ себя
      */
-    fun contains(p: Point): Boolean = (center.distance(p) <= radius)
+    fun contains(p: Point): Boolean = center.distance(p) <= radius
 }
 
 /**
@@ -150,18 +154,23 @@ fun convexHull(points: MutableList<Point>): Set<Point> {
     points.sortWith { point, point2 -> compare(point, point2) }
 
     val list = mutableListOf(points[0])
+
     for (i in 1 until points.size) {
-        if ((i < points.size - 1) && (orientation(point0, points[i], points[i + 1]) == 0)) continue
+        while ((i < points.size - 1) && (orientation(point0, points[i], points[i + 1]) == 0)) continue
         list.add(points[i])
     }
     println(list)
-    if (list.size < 3) throw Exception(NoSuchElementException())
+    if (list.size < 3) throw NoSuchElementException()
 
-    val res = mutableListOf(points[0], points[1], points[2])
+    val res = ArrayDeque(listOf(points[0], points[1], points[2]))
+
     for (i in 3 until list.size) {
         val n = res.size
-        while (n > 1 && orientation(res[n - 2], res[n - 1], list[i]) != 2) res.removeLast()
-        res.add(0, list[i])
+        while (n > 1 && orientation(res[n - 2], res[n - 1], list[i]) != 2) {
+            res.removeLast()
+            println(res)
+        }
+        res.addFirst(list[i])
     }
     return res.toSet()
 }

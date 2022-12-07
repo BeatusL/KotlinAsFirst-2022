@@ -66,16 +66,13 @@ fun alignFile(inputName: String, lineLength: Int, outputName: String) {
  * Подчёркивание в середине и/или в конце строк значения не имеет.
  */
 fun deleteMarked(inputName: String, outputName: String) {
-    val strings = mutableListOf<String>()
-    for (line in File(inputName).readLines()) {
-        when {
-            line.isEmpty() || isMadeOfWhiteSpaces(line) -> strings.add("")
-            line[0] != '_' -> strings.add(line)
-        }
-    }
     File(outputName).bufferedWriter().use {
-        it.write(strings[0])
-        for (i in 1 until strings.size) it.write("\n${strings[i]}")
+        for (line in File(inputName).readLines()) {
+            if (line.isEmpty() || line[0] != '_') {
+                it.write(line)
+                it.newLine()
+            }
+        }
     }
 }
 
@@ -283,17 +280,24 @@ fun transliterate(inputName: String, dictionary: Map<Char, String>, outputName: 
  * Обратите внимание: данная функция не имеет возвращаемого значения
  */
 fun chooseLongestChaoticWord(inputName: String, outputName: String) {
-    val list = mutableListOf<String>()
+    var list = mutableListOf<String>()
+    var maxLen = -1
     File(inputName).bufferedReader().use {
         for (line in it.readLines()) {
-            val lineupper = line.uppercase()
-            if (lineupper.toSet().size == line.length) list.add(line)
+            val curLen = line.length
+            if (line.uppercase().toSet().size != curLen) continue
+            when {
+                (curLen == maxLen) -> list.add(line)
+                (curLen > maxLen) -> {
+                    list = mutableListOf(line)
+                    maxLen = curLen
+                }
+            }
         }
     }
-    if (list.isNotEmpty()) {
-        val maxlen = list.maxOf { it.length }
-        File(outputName).bufferedWriter().use { it.write(list.filter { a -> a.length == maxlen }.joinToString(", ")) }
-    } else File(outputName).bufferedWriter().use { it.write("") }
+    File(outputName).bufferedWriter().use {
+        it.write(list.joinToString(", "))
+    }
 }
 
 
