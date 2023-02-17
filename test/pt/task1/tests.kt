@@ -8,10 +8,10 @@ class Tests {
 
     @Test
     fun testTime() {
-        assertThrows(IllegalArgumentException::class.java) { Time.createTime("19:62") }
-        assertThrows(IllegalArgumentException::class.java) { Time.createTime("19.30") }
-        assertThrows(IllegalArgumentException::class.java) { Time.createTime("24:19") }
-        assertEquals(Time.createTime("04:20").minutes, 260)
+        assertThrows(IllegalArgumentException::class.java) { Time("19:62") }
+        assertThrows(IllegalArgumentException::class.java) { Time("19.30") }
+        assertThrows(IllegalArgumentException::class.java) { Time("24:19") }
+        assertEquals(Time("04:20").minutes, 260)
     }
 
 }

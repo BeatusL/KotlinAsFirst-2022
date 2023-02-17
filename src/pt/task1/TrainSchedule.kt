@@ -2,17 +2,14 @@ package pt.task1
 
 import java.lang.IllegalArgumentException
 
-class TrainSchedule {
+class TrainSchedule(trains: MutableList<Train>) {
+    val trains = trains
 }
 
-class Destination private constructor(val time: Time, val station: String) {
-    companion object {
-        fun createDest(time: Time, station: String) = Destination(time, station)
-    }
+class Destination(val time: Time, val station: String) {
 }
 
-class Time private constructor(private val time: String) {
-
+class Time(private val time: String) {
     init {
         if (!time.matches(Regex("^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]\$")))           // hh:mm
             throw IllegalArgumentException("Wrong time format")
@@ -22,10 +19,16 @@ class Time private constructor(private val time: String) {
     val minutes = timeL[0].toInt() * 60 + timeL[1]
 
     override fun toString() = time
-
-    companion object {
-        fun createTime(str: String) = Time(str)
-    }
 }
 
+class Train(val name: String, var destinations: MutableList<Destination>, val depTime: Time) {
+
+    init {
+        if (destinations.isEmpty()) throw IllegalArgumentException("Train without further destination")
+    }
+
+    val finalDestination = destinations.last()
+
+
+}
 
