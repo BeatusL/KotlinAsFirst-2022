@@ -3,26 +3,16 @@ package pt.task1
 
 import java.lang.IllegalArgumentException
 
-class TrainSchedule(private val trains: MutableList<Train>) {
+class TrainSchedule(private val trains: List<Train>) {
 
     class Destination(val time: Time, val name: String) {
         override fun toString() = "$name - $time"
     }
 
-    class Time(private val time: String) {
-        init {
-            if (!time.matches(Regex("^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]\$")))           // hh:mm
-                throw IllegalArgumentException("Wrong time format")
-        }
-
-        private val timeL = time.split(":").map { it.toInt() }
-        val minutes = timeL[0] * 60 + timeL[1]
-
-        override fun toString() = time
-    }
-
     class Train(val name: String, destinations: MutableList<Destination>, val depTime: Time) {
         val destinations: MutableList<Destination>
+        fun size() = destinations.size
+
 
         init {
             if (destinations.isEmpty()) throw IllegalArgumentException("Train without further destination")
@@ -31,12 +21,11 @@ class TrainSchedule(private val trains: MutableList<Train>) {
                 throw RuntimeException("Time paradox detected")
         }
 
-        //val finalDestination = destinations.last()
 
         fun addStation(station: Destination) {
             destinations.add(station)
             destinations.sortBy { it.time.minutes }
-            println("Station added successfully")
+            println("Added successfully")
         }
 
         fun deleteStation(station: String) {
@@ -44,7 +33,7 @@ class TrainSchedule(private val trains: MutableList<Train>) {
                 for (x in destinations) if (x.name == station) {
                     destinations.remove(x)
                     println("Deleted successfully")
-                    break
+                    return
                 }
             } else {
                 throw RuntimeException(
@@ -55,22 +44,34 @@ class TrainSchedule(private val trains: MutableList<Train>) {
             throw NoSuchElementException("No such station")
         }
 
-        fun contains(station: String): Boolean {
-            for (x in destinations) if (x.name == station) return true
-            return false
+        fun indexOf(station: String): Int? {
+            for (x in destinations.indices) if (destinations[x].name == station) return x
+            return null
         }
 
         override fun toString(): String = this.name
     }
 
-    fun nearestTrain() = trains.minBy { it.destinations[0].time.minutes }
+    fun nearestTrain() =
+        trains.minBy { it.destinations[0].time.minutes }            // Which one reaches another station sooner
 
-    fun nearestByDestination(station: String) =
-        trains.filter { it.contains(station) }.minBy { it.destinations[0].time.minutes }
+    fun nearestByDestination(station: String) =                     // Which one reaches that particular station sooner
+        trains.filter { it.indexOf(station) != null }.minBy { it.destinations[it.indexOf(station)!!].time.minutes }
 
-    fun nearestByTime(time: Time) {
-        trains.filter { it.depTime.minutes > time.minutes }.minBy { it.destinations[0].time.minutes }
+    fun nearestByTime(time: Time) =                             // Which one leaves closer to the appointed time
+        trains.filter { it.depTime.minutes >= time.minutes }.minBy { it.depTime.minutes }
+
+}
+
+class Time(private val time: String) {
+    init {
+        if (!time.matches(Regex("^([01][0-9]|2[0-3]):[0-5][0-9]\$")))           // hh:mm
+            throw IllegalArgumentException("Wrong time format")
     }
 
+    private val timeL = time.split(":").map { it.toInt() }
+    val minutes = timeL[0] * 60 + timeL[1]
+
+    override fun toString() = time
 }
 
