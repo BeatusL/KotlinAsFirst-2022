@@ -2,6 +2,9 @@
 
 package lesson12.task1
 
+import ru.spbstu.wheels.asList
+import java.lang.IllegalArgumentException
+
 /**
  * Класс "расписание поездов".
  *
@@ -16,6 +19,13 @@ package lesson12.task1
  * В конструктор передаётся название станции отправления для данного расписания.
  */
 class TrainTimeTable(val baseStationName: String) {
+    val listOfTrains = mutableListOf<Train>()
+
+    private fun indexOrNull(train: String): Int? {
+        for (i in listOfTrains.indices) if (listOfTrains[i].name == train) return i
+        return null
+    }
+
     /**
      * Добавить новый поезд.
      *
@@ -26,7 +36,11 @@ class TrainTimeTable(val baseStationName: String) {
      * @param destination конечная станция
      * @return true, если поезд успешно добавлен, false, если такой поезд уже есть
      */
-    fun addTrain(train: String, depart: Time, destination: Stop): Boolean = TODO()
+    fun addTrain(train: String, depart: Time, destination: Stop): Boolean {
+        if (indexOrNull(train) != null) return false
+        listOfTrains.add(Train(train, Stop(baseStationName, depart), destination))
+        return true
+    }
 
     /**
      * Удалить существующий поезд.
@@ -36,7 +50,12 @@ class TrainTimeTable(val baseStationName: String) {
      * @param train название поезда
      * @return true, если поезд успешно удалён, false, если такой поезд не существует
      */
-    fun removeTrain(train: String): Boolean = TODO()
+    fun removeTrain(train: String): Boolean {
+        val index = indexOrNull(train)
+        if (index == null) return false
+        else listOfTrains.removeAt(index)
+        return true
+    }
 
     /**
      * Добавить/изменить начальную, промежуточную или конечную остановку поезду.
@@ -56,7 +75,17 @@ class TrainTimeTable(val baseStationName: String) {
      * @param stop начальная, промежуточная или конечная станция
      * @return true, если поезду была добавлена новая остановка, false, если было изменено время остановки на старой
      */
-    fun addStop(train: String, stop: Stop): Boolean = TODO()
+    fun addStop(train: String, stop: Stop): Boolean {
+        val index = indexOrNull(train) ?: return false
+        listOfTrains[index].inChecker(stop)
+        return if (stop.name !in listOfTrains[index].stops.map { it.name }) {
+            listOfTrains[index] = Train(train, listOfTrains[index].stops + stop)
+            true
+        } else {
+            listOfTrains[index] = listOfTrains[index].changeTime(stop)
+            false
+        }
+    }
 
     /**
      * Удалить одну из промежуточных остановок.
@@ -68,12 +97,20 @@ class TrainTimeTable(val baseStationName: String) {
      * @param stopName название промежуточной остановки
      * @return true, если удаление успешно
      */
-    fun removeStop(train: String, stopName: String): Boolean = TODO()
+    fun removeStop(train: String, stopName: String): Boolean {
+        val index = indexOrNull(train) ?: return false
+        val stops = listOfTrains[index].stops.sortedBy { it.time.toMinutes() }
+        for (x in 1..stops.size - 2) if (stopName == stops[x].name) {
+            listOfTrains[index] = Train(train, stops - stops[x])
+            return true
+        }
+        return false
+    }
 
     /**
      * Вернуть список всех поездов, упорядоченный по времени отправления с baseStationName
      */
-    fun trains(): List<Train> = TODO()
+    fun trains(): List<Train> = listOfTrains.sortedBy { it.stops[0].time }
 
     /**
      * Вернуть список всех поездов, отправляющихся не ранее currentTime
@@ -94,16 +131,23 @@ class TrainTimeTable(val baseStationName: String) {
  * Время (часы, минуты)
  */
 data class Time(val hour: Int, val minute: Int) : Comparable<Time> {
+    init {
+        if (hour >= 24 || hour < 0 || minute >= 60 || minute < 0) throw IllegalArgumentException()
+    }
+
+    fun toMinutes() = hour * 60 + minute
+    override fun toString() = String.format("%02d:%02d", hour, minute)
+
     /**
      * Сравнение времён на больше/меньше (согласно контракту compareTo)
      */
-    override fun compareTo(other: Time): Int = TODO()
+    override fun compareTo(other: Time): Int = this.toMinutes() - other.toMinutes()
 }
 
 /**
  * Остановка (название, время прибытия)
  */
-data class Stop(val name: String, val time: Time)
+data class Stop(val name: String, val time: Time, )
 
 /**
  * Поезд (имя, список остановок, упорядоченный по времени).
@@ -111,4 +155,28 @@ data class Stop(val name: String, val time: Time)
  */
 data class Train(val name: String, val stops: List<Stop>) {
     constructor(name: String, vararg stops: Stop) : this(name, stops.asList())
+
+    init {
+        stops.sortedBy { it.time.toMinutes() }
+    }
+
+    fun changeTime(stop: Stop): Train {
+        var index = 0
+        for (i in stops.indices) if (stop.name == stops[i].name) {
+            index = i
+            break
+        }
+        return Train(name, stops.subList(0, index) + stop + stops.subList(index + 1, stops.size))
+    }
+
+    fun inChecker(stop: Stop) {
+        val list = stops.sortedBy { it.time.toMinutes() }
+        if ((stop.name != list[0].name && stop.name != list.last().name &&
+                    (stop.time <= list[0].time || stop.time >= list.last().time)) ||
+            (stop.name == list[0].name && stop.time >= list[1].time) ||
+            (stop.name == list.last().name && stop.time <= list[list.size - 2].time)
+        )
+            throw IllegalArgumentException()
+        for (x in list) if (x != stop && x.time == stop.time) throw IllegalArgumentException()
+    }
 }
