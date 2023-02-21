@@ -122,8 +122,8 @@ fun sqDist(point1: Point, point2: Point) = (point1.x - point2.x) * (point1.x - p
 fun orientation(a: Point, b: Point, c: Point): Int {
     val area = ((b.y - a.y) * (c.x - b.x) - (b.x - a.x) * (c.y - b.y))
     return when {
-        (area > 0) -> 1
-        (area < 0) -> 2
+        area > 0 -> 1
+        area < 0 -> 2
         else -> 0
     }
 }
@@ -232,9 +232,9 @@ fun lineBySegment(s: Segment): Line {
     val dy = s.end.y - s.begin.y
     val k = dy / dx
     return when {
-        (dx == 0.0) -> Line(Point(s.begin.x, s.begin.y), PI / 2.0)
-        (atan(k) < 0) -> Line(Point(s.begin.x, s.begin.y), atan(k) + PI)
-        (atan(k) >= PI) -> Line(Point(s.begin.x, s.begin.y), atan(k) - PI)
+        dx == 0.0 -> Line(Point(s.begin.x, s.begin.y), PI / 2.0)
+        atan(k) < 0 -> Line(Point(s.begin.x, s.begin.y), atan(k) + PI)
+        atan(k) >= PI -> Line(Point(s.begin.x, s.begin.y), atan(k) - PI)
         else -> Line(Point(s.begin.x, s.begin.y), atan(k))
     }
 }
@@ -256,9 +256,9 @@ fun bisectorByPoints(a: Point, b: Point): Line {
     val dy = b.y - a.y
     val angle = atan(-1 / (dy / dx))
     return when {
-        (dx == 0.0) -> Line(Point(a.x + dx / 2.0, a.y + dy / 2.0), 0.0)
-        (angle < 0) -> Line(Point(a.x + dx / 2.0, a.y + dy / 2.0), angle + PI)
-        (angle >= PI) -> Line(Point(a.x + dx / 2.0, a.y + dy / 2.0), angle - PI)
+        dx == 0.0 -> Line(Point(a.x + dx / 2.0, a.y + dy / 2.0), 0.0)
+        angle < 0 -> Line(Point(a.x + dx / 2.0, a.y + dy / 2.0), angle + PI)
+        angle >= PI -> Line(Point(a.x + dx / 2.0, a.y + dy / 2.0), angle - PI)
         else -> Line(Point(a.x + dx / 2.0, a.y + dy / 2.0), angle)
     }
 }
