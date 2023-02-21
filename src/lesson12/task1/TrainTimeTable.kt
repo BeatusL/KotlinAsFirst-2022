@@ -18,8 +18,8 @@ import java.lang.IllegalArgumentException
  *
  * В конструктор передаётся название станции отправления для данного расписания.
  */
-class TrainTimeTable(val baseStationName: String) {
-    val listOfTrains = mutableListOf<Train>()
+class TrainTimeTable(private val baseStationName: String) {
+    private val listOfTrains = mutableListOf<Train>()
 
     private fun indexOrNull(train: String): Int? {
         for (i in listOfTrains.indices) if (listOfTrains[i].name == train) return i
