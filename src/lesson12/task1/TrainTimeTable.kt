@@ -117,14 +117,34 @@ class TrainTimeTable(private val baseStationName: String) {
      * и имеющих остановку (начальную, промежуточную или конечную) на станции destinationName.
      * Список должен быть упорядочен по времени прибытия на станцию destinationName
      */
-    fun trains(currentTime: Time, destinationName: String): List<Train> = TODO()
+    fun trains(currentTime: Time, destinationName: String): List<Train> {
+        val res = mutableListOf<Train>()
+        var index: Int
+        for (train in listOfTrains) {
+            index = train.findStation(destinationName)
+            if (index != -1 && train.stops[0].time >= currentTime) {
+                res.add(train.sortedStops())
+            }
+        }
+        return res.sortedBy { it.stops[it.findStation(destinationName)].time.toMinutes() }
+    }
 
     /**
      * Сравнение на равенство.
      * Расписания считаются одинаковыми, если содержат одинаковый набор поездов,
      * и поезда с тем же именем останавливаются на одинаковых станциях в одинаковое время.
      */
-    override fun equals(other: Any?): Boolean = TODO()
+    override fun equals(other: Any?): Boolean {
+        if (other !is TrainTimeTable || this.trains().size != other.trains().size) return false
+        for (i in this.trains().indices) {
+            if (this.trains()[i].name != other.trains()[i].name ||
+                this.trains()[i].sortedStops() != other.trains()[i].sortedStops()
+            )
+                return false
+        }
+        return true
+    }
+
 }
 
 /**
@@ -179,4 +199,13 @@ data class Train(val name: String, val stops: List<Stop>) {
             throw IllegalArgumentException()
         for (x in list) if (x != stop && x.time == stop.time) throw IllegalArgumentException()
     }
+
+    fun findStation(station: String): Int {
+        for (i in stops.indices) {
+            if (stops[i].name == station) return i
+        }
+        return -1
+    }
+
+    fun sortedStops() = Train(name, stops.sortedBy { it.time.toMinutes() })
 }
