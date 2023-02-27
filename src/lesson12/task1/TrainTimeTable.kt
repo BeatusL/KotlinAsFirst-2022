@@ -37,7 +37,7 @@ class TrainTimeTable(private val baseStationName: String) {
      * @return true, если поезд успешно добавлен, false, если такой поезд уже есть
      */
     fun addTrain(train: String, depart: Time, destination: Stop): Boolean {
-        if (indexOrNull(train) != null) return false
+        if (Train(train, Stop(baseStationName, depart), destination) in listOfTrains) return false
         listOfTrains.add(Train(train, Stop(baseStationName, depart), destination))
         return true
     }
@@ -76,7 +76,7 @@ class TrainTimeTable(private val baseStationName: String) {
      * @return true, если поезду была добавлена новая остановка, false, если было изменено время остановки на старой
      */
     fun addStop(train: String, stop: Stop): Boolean {
-        val index = indexOrNull(train) ?: return false
+        val index = listOfTrains.indexOf(Train(train))
         listOfTrains[index].inChecker(stop)
         return if (stop.name !in listOfTrains[index].stops.map { it.name }) {
             listOfTrains[index] = Train(train, listOfTrains[index].stops + stop)
@@ -167,7 +167,7 @@ data class Time(val hour: Int, val minute: Int) : Comparable<Time> {
 /**
  * Остановка (название, время прибытия)
  */
-data class Stop(val name: String, val time: Time, )
+data class Stop(val name: String, val time: Time)
 
 /**
  * Поезд (имя, список остановок, упорядоченный по времени).
@@ -208,4 +208,7 @@ data class Train(val name: String, val stops: List<Stop>) {
     }
 
     fun sortedStops() = Train(name, stops.sortedBy { it.time.toMinutes() })
+
+    override fun equals(other: Any?): Boolean = (other is Train && this.name == other.name) ||
+            (other is String && this.name == other)
 }
