@@ -121,7 +121,7 @@ class TrainTimeTable(private val baseStationName: String) {
         val res = mutableListOf<Train>()
         var index: Int
         for (train in listOfTrains) {
-            index = train.findStation(destinationName)
+            index = train.stops.indexOfFirst { it.name == destinationName }
             if (index != -1 && train.stops[0].time >= currentTime) {
                 res.add(train.sortedStops())
             }
@@ -167,26 +167,24 @@ data class Time(val hour: Int, val minute: Int) : Comparable<Time> {
 /**
  * Остановка (название, время прибытия)
  */
-data class Stop(val name: String, val time: Time)
+data class Stop(val name: String, val time: Time) {
+    override fun equals(other: Any?): Boolean = (other is Stop && this.name == other.name) || (other is String && this.name == other)
+}
 
 /**
  * Поезд (имя, список остановок, упорядоченный по времени).
  * Первой идёт начальная остановка, последней конечная.
  */
-data class Train(val name: String, val stops: List<Stop>) {
+data class Train(val name: String, var stops: List<Stop>) {
     constructor(name: String, vararg stops: Stop) : this(name, stops.asList())
 
     init {
         stops.sortedBy { it.time.toMinutes() }
     }
 
-    fun changeTime(stop: Stop): Train {
-        var index = 0
-        for (i in stops.indices) if (stop.name == stops[i].name) {
-            index = i
-            break
-        }
-        return Train(name, stops.subList(0, index) + stop + stops.subList(index + 1, stops.size))
+    fun changeTime(stop: Stop) = apply {
+        var index = stops.indexOf(stop)
+        stops = stops.subList(0, index) + stop + stops.subList(index + 1, stops.size)
     }
 
     fun inChecker(stop: Stop) {
