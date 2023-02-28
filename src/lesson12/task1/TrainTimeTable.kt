@@ -21,11 +21,6 @@ import java.lang.IllegalArgumentException
 class TrainTimeTable(private val baseStationName: String) {
     private val listOfTrains = mutableListOf<Train>()
 
-    private fun indexOrNull(train: String): Int? {
-        for (i in listOfTrains.indices) if (listOfTrains[i].name == train) return i
-        return null
-    }
-
     /**
      * Добавить новый поезд.
      *
@@ -51,8 +46,8 @@ class TrainTimeTable(private val baseStationName: String) {
      * @return true, если поезд успешно удалён, false, если такой поезд не существует
      */
     fun removeTrain(train: String): Boolean {
-        val index = indexOrNull(train)
-        if (index == null) return false
+        val index = listOfTrains.indexOfFirst { it.name == train }
+        if (index == -1) return false
         else listOfTrains.removeAt(index)
         return true
     }
@@ -98,7 +93,7 @@ class TrainTimeTable(private val baseStationName: String) {
      * @return true, если удаление успешно
      */
     fun removeStop(train: String, stopName: String): Boolean {
-        val index = indexOrNull(train) ?: return false
+        val index = listOfTrains.indexOfFirst { it.name == train }.takeIf { it > 0 } ?: return false
         val stops = listOfTrains[index].stops.sortedBy { it.time.toMinutes() }
         for (x in 1..stops.size - 2) if (stopName == stops[x].name) {
             listOfTrains[index] = Train(train, stops - stops[x])
@@ -126,7 +121,7 @@ class TrainTimeTable(private val baseStationName: String) {
                 res.add(train.sortedStops())
             }
         }
-        return res.sortedBy { it.stops.find { it.name == destinationName }!!.time.toMinutes() }
+        return res.sortedBy { train -> train.stops.find { it.name == destinationName }!!.time.toMinutes() }
     }
 
     /**
@@ -168,7 +163,7 @@ data class Time(val hour: Int, val minute: Int) : Comparable<Time> {
  * Остановка (название, время прибытия)
  */
 data class Stop(val name: String, val time: Time) {
-    override fun equals(other: Any?): Boolean = (other is Stop && this.name == other.name) || (other is String && this.name == other)
+    override fun equals(other: Any?): Boolean = other is Stop && this.name == other.name
 }
 
 /**
@@ -183,7 +178,7 @@ data class Train(val name: String, var stops: List<Stop>) {
     }
 
     fun changeTime(stop: Stop) = apply {
-        var index = stops.indexOf(stop)
+        val index = stops.indexOf(stop)
         stops = stops.subList(0, index) + stop + stops.subList(index + 1, stops.size)
     }
 
