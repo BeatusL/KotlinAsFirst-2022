@@ -126,7 +126,7 @@ class TrainTimeTable(private val baseStationName: String) {
                 res.add(train.sortedStops())
             }
         }
-        return res.sortedBy { it.stops[it.findStation(destinationName)].time.toMinutes() }
+        return res.sortedBy { it.stops.find { it.name == destinationName }!!.time.toMinutes() }
     }
 
     /**
@@ -196,13 +196,6 @@ data class Train(val name: String, var stops: List<Stop>) {
         )
             throw IllegalArgumentException()
         for (x in list) if (x != stop && x.time == stop.time) throw IllegalArgumentException()
-    }
-
-    fun findStation(station: String): Int {
-        for (i in stops.indices) {
-            if (stops[i].name == station) return i
-        }
-        return -1
     }
 
     fun sortedStops() = Train(name, stops.sortedBy { it.time.toMinutes() })
