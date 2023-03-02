@@ -19,7 +19,7 @@ import java.lang.IllegalArgumentException
  * В конструктор передаётся название станции отправления для данного расписания.
  */
 class TrainTimeTable(private val baseStationName: String) {
-    private val listOfTrains = mutableListOf<Train>()
+    private val mapOfTrains = mutableMapOf<String, Train>()
 
     /**
      * Добавить новый поезд.
@@ -32,9 +32,12 @@ class TrainTimeTable(private val baseStationName: String) {
      * @return true, если поезд успешно добавлен, false, если такой поезд уже есть
      */
     fun addTrain(train: String, depart: Time, destination: Stop): Boolean {
-        if (Train(train, Stop(baseStationName, depart), destination) in listOfTrains) return false
-        listOfTrains.add(Train(train, Stop(baseStationName, depart), destination))
-        return true
+        return if (mapOfTrains[train] != null) {
+            false
+        } else {
+            mapOfTrains[train] = Train(train, Stop(baseStationName, depart), destination)
+            true
+        }
     }
 
     /**
@@ -46,10 +49,12 @@ class TrainTimeTable(private val baseStationName: String) {
      * @return true, если поезд успешно удалён, false, если такой поезд не существует
      */
     fun removeTrain(train: String): Boolean {
-        val index = listOfTrains.indexOfFirst { it.name == train }
-        if (index == -1) return false
-        else listOfTrains.removeAt(index)
-        return true
+        return if (mapOfTrains[train] == null) {
+            false
+        } else {
+            mapOfTrains.remove(train)
+            true
+        }
     }
 
     /**
@@ -71,13 +76,12 @@ class TrainTimeTable(private val baseStationName: String) {
      * @return true, если поезду была добавлена новая остановка, false, если было изменено время остановки на старой
      */
     fun addStop(train: String, stop: Stop): Boolean {
-        val index = listOfTrains.indexOf(Train(train))
-        listOfTrains[index].inChecker(stop)
-        return if (stop.name !in listOfTrains[index].stops.map { it.name }) {
-            listOfTrains[index] = Train(train, listOfTrains[index].stops + stop)
+        mapOfTrains[train]?.inChecker(stop) ?: return false
+        return if (stop.name !in mapOfTrains[train]!!.stops.map { it.name }) {
+            mapOfTrains[train] = Train(train, mapOfTrains[train]!!.stops + stop)
             true
         } else {
-            listOfTrains[index] = listOfTrains[index].changeTime(stop)
+            mapOfTrains[train] = mapOfTrains[train]!!.changeTime(stop)
             false
         }
     }
@@ -93,10 +97,9 @@ class TrainTimeTable(private val baseStationName: String) {
      * @return true, если удаление успешно
      */
     fun removeStop(train: String, stopName: String): Boolean {
-        val index = listOfTrains.indexOfFirst { it.name == train }.takeIf { it > 0 } ?: return false
-        val stops = listOfTrains[index].stops.sortedBy { it.time.toMinutes() }
+        val stops = mapOfTrains[train]?.stops?.sortedBy { it.time.toMinutes() } ?: return false
         for (x in 1..stops.size - 2) if (stopName == stops[x].name) {
-            listOfTrains[index] = Train(train, stops - stops[x])
+            mapOfTrains[train] = Train(train, stops - stops[x])
             return true
         }
         return false
@@ -105,7 +108,7 @@ class TrainTimeTable(private val baseStationName: String) {
     /**
      * Вернуть список всех поездов, упорядоченный по времени отправления с baseStationName
      */
-    fun trains(): List<Train> = listOfTrains.sortedBy { it.stops[0].time }
+    fun trains(): List<Train> = mapOfTrains.values.sortedBy { it.stops[0].time }
 
     /**
      * Вернуть список всех поездов, отправляющихся не ранее currentTime
@@ -115,13 +118,13 @@ class TrainTimeTable(private val baseStationName: String) {
     fun trains(currentTime: Time, destinationName: String): List<Train> {
         val res = mutableListOf<Train>()
         var index: Int
-        for (train in listOfTrains) {
+        for ((_, train) in mapOfTrains) {
             index = train.stops.indexOfFirst { it.name == destinationName }
             if (index != -1 && train.stops[0].time >= currentTime) {
                 res.add(train.sortedStops())
             }
         }
-        return res.sortedBy { train -> train.stops.find { it.name == destinationName }!!.time.toMinutes() }
+        return res.sortedBy { _train -> _train.stops.find { it.name == destinationName }!!.time.toMinutes() }
     }
 
     /**
