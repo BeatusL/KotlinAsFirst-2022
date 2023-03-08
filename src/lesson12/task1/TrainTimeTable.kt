@@ -48,14 +48,7 @@ class TrainTimeTable(private val baseStationName: String) {
      * @param train название поезда
      * @return true, если поезд успешно удалён, false, если такой поезд не существует
      */
-    fun removeTrain(train: String): Boolean {
-        return if (mapOfTrains[train] == null) {
-            false
-        } else {
-            mapOfTrains.remove(train)
-            true
-        }
-    }
+    fun removeTrain(train: String): Boolean = mapOfTrains.remove(train) != null
 
     /**
      * Добавить/изменить начальную, промежуточную или конечную остановку поезду.
@@ -97,12 +90,14 @@ class TrainTimeTable(private val baseStationName: String) {
      * @return true, если удаление успешно
      */
     fun removeStop(train: String, stopName: String): Boolean {
-        val stops = mapOfTrains[train]?.stops?.sortedBy { it.time.toMinutes() } ?: return false
-        for (x in 1..stops.size - 2) if (stopName == stops[x].name) {
-            mapOfTrains[train] = Train(train, stops - stops[x])
-            return true
-        }
-        return false
+        return if (
+            mapOfTrains[train]!!.mapOfStops.remove(stopName) != null
+            && mapOfTrains[train]!!.current.name != stopName
+            && mapOfTrains[train]!!.destination.name != stopName
+        ) {
+            mapOfTrains[train]!!.stops = mapOfTrains[train]!!.mapOfStops.values.toList().sortedBy { it.time.minute }
+            true
+        } else false
     }
 
     /**
@@ -175,6 +170,10 @@ data class Stop(val name: String, val time: Time) {
  */
 data class Train(val name: String, var stops: List<Stop>) {
     constructor(name: String, vararg stops: Stop) : this(name, stops.asList())
+
+    val mapOfStops = stops.associateBy { it.name }.toMutableMap()
+    val current = this.stops.minBy { it.time.toMinutes() }
+    val destination = this.stops.maxBy { it.time.toMinutes() }
 
     init {
         stops.sortedBy { it.time.toMinutes() }
