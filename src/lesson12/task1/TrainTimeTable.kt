@@ -70,7 +70,7 @@ class TrainTimeTable(private val baseStationName: String) {
      */
     fun addStop(train: String, stop: Stop): Boolean {
         mapOfTrains[train]?.inChecker(stop) ?: return false
-        return if (stop.name !in mapOfTrains[train]!!.stops.map { it.name }) {
+        return if (mapOfTrains[train]!!.mapOfStops[stop.name] == null) {
             mapOfTrains[train] = Train(train, mapOfTrains[train]!!.stops + stop)
             true
         } else {
