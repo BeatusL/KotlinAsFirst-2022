@@ -136,6 +136,8 @@ class TrainTimeTable(private val baseStationName: String) {
         return true
     }
 
+    override fun hashCode(): Int = baseStationName.hashCode()
+
 }
 
 /**
@@ -201,4 +203,11 @@ data class Train(val name: String, var stops: List<Stop>) {
 
     override fun equals(other: Any?): Boolean = (other is Train && this.name == other.name) ||
             (other is String && this.name == other)
+
+    override fun hashCode(): Int {
+        var result = name.hashCode()
+        result = 31 * result + stops.hashCode()
+        return result
+    }
+
 }
