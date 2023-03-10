@@ -74,7 +74,7 @@ class TrainTimeTable(private val baseStationName: String) {
             mapOfTrains[train]!!.apply {
                 hashMapOfStops[stop.name] = stop
                 sortedMapOfStops[stop.time] = stop
-                stops.toMutableList().add(stop)
+                stops = sortedMapOfStops.values.toList()
             }
             true
         } else {
@@ -101,6 +101,7 @@ class TrainTimeTable(private val baseStationName: String) {
             mapOfTrains[train]!!.apply {
                 sortedMapOfStops.remove(hashMapOfStops[stopName]!!.time)
                 hashMapOfStops.remove(stopName)
+                stops = sortedMapOfStops.values.toList()
             }
             true
         } else false
@@ -184,6 +185,7 @@ data class Train(val name: String, var stops: List<Stop>) {
         sortedMapOfStops.remove(hashMapOfStops[stop.name]!!.time)
         hashMapOfStops[stop.name] = stop
         sortedMapOfStops[stop.time] = stop
+        stops = sortedMapOfStops.values.toList()
     }
 
     fun inChecker(stop: Stop) {
