@@ -70,11 +70,15 @@ class TrainTimeTable(private val baseStationName: String) {
      */
     fun addStop(train: String, stop: Stop): Boolean {
         mapOfTrains[train]?.inChecker(stop) ?: return false
-        return if (mapOfTrains[train]!!.mapOfStops[stop.name] == null) {
-            mapOfTrains[train] = Train(train, mapOfTrains[train]!!.stops + stop)
+        return if (mapOfTrains[train]!!.hashMapOfStops[stop.name] == null) {
+            mapOfTrains[train]!!.apply {
+                hashMapOfStops[stop.name] = stop
+                sortedMapOfStops[stop.time] = stop
+                stops.toMutableList().add(stop)
+            }
             true
         } else {
-            mapOfTrains[train] = mapOfTrains[train]!!.changeTime(stop)
+            mapOfTrains[train]!!.changeTime(stop)
             false
         }
     }
@@ -90,12 +94,14 @@ class TrainTimeTable(private val baseStationName: String) {
      * @return true, если удаление успешно
      */
     fun removeStop(train: String, stopName: String): Boolean {
-        return if (
-            mapOfTrains[train]!!.mapOfStops.remove(stopName) != null
-            && mapOfTrains[train]!!.current.name != stopName
-            && mapOfTrains[train]!!.destination.name != stopName
+        return if (mapOfTrains[train]!!.sortedMapOfStops.values.last().name != stopName
+            && mapOfTrains[train]!!.sortedMapOfStops.values.first().name != stopName
+            && mapOfTrains[train]!!.hashMapOfStops[stopName] != null
         ) {
-            mapOfTrains[train]!!.stops = mapOfTrains[train]!!.mapOfStops.values.toList().sortedBy { it.time.minute }
+            mapOfTrains[train]!!.apply {
+                sortedMapOfStops.remove(hashMapOfStops[stopName]!!.time)
+                hashMapOfStops.remove(stopName)
+            }
             true
         } else false
     }
@@ -103,24 +109,16 @@ class TrainTimeTable(private val baseStationName: String) {
     /**
      * Вернуть список всех поездов, упорядоченный по времени отправления с baseStationName
      */
-    fun trains(): List<Train> = mapOfTrains.values.sortedBy { it.stops[0].time }
+    fun trains(): List<Train> = mapOfTrains.values.sortedBy { it.sortedMapOfStops.values.first().time }
 
     /**
      * Вернуть список всех поездов, отправляющихся не ранее currentTime
      * и имеющих остановку (начальную, промежуточную или конечную) на станции destinationName.
      * Список должен быть упорядочен по времени прибытия на станцию destinationName
      */
-    fun trains(currentTime: Time, destinationName: String): List<Train> {
-        val res = mutableListOf<Train>()
-        var index: Int
-        for ((_, train) in mapOfTrains) {
-            index = train.stops.indexOfFirst { it.name == destinationName }
-            if (index != -1 && train.stops[0].time >= currentTime) {
-                res.add(train.sortedStops())
-            }
-        }
-        return res.sortedBy { _train -> _train.stops.find { it.name == destinationName }!!.time.toMinutes() }
-    }
+    fun trains(currentTime: Time, destinationName: String): List<Train> =
+        mapOfTrains.values.filter { it.hashMapOfStops[destinationName] != null && it.sortedMapOfStops.values.first().time > currentTime }
+            .sortedBy { _train -> _train.hashMapOfStops[destinationName]!!.time.minute }
 
     /**
      * Сравнение на равенство.
@@ -162,6 +160,12 @@ data class Time(val hour: Int, val minute: Int) : Comparable<Time> {
  */
 data class Stop(val name: String, val time: Time) {
     override fun equals(other: Any?): Boolean = other is Stop && this.name == other.name
+    override fun hashCode(): Int {
+        var result = name.hashCode()
+        result = 31 * result + time.hashCode()
+        return result
+    }
+
 }
 
 /**
@@ -171,28 +175,26 @@ data class Stop(val name: String, val time: Time) {
 data class Train(val name: String, var stops: List<Stop>) {
     constructor(name: String, vararg stops: Stop) : this(name, stops.asList())
 
-    val mapOfStops = stops.associateBy { it.name }.toMutableMap()
-    val current = this.stops.minBy { it.time.toMinutes() }
-    val destination = this.stops.maxBy { it.time.toMinutes() }
-
-    init {
-        stops.sortedBy { it.time.toMinutes() }
-    }
+    val hashMapOfStops = HashMap(stops.associateBy { it.name })
+    val sortedMapOfStops = stops.associateBy { it.time }.toSortedMap(compareBy { it.toMinutes() })
 
     fun changeTime(stop: Stop) = apply {
-        val index = stops.indexOf(stop)
-        stops = stops.subList(0, index) + stop + stops.subList(index + 1, stops.size)
+        sortedMapOfStops.remove(hashMapOfStops[stop.name]!!.time)
+        hashMapOfStops[stop.name] = stop
+        sortedMapOfStops[stop.time] = stop
     }
 
     fun inChecker(stop: Stop) {
-        val list = stops.sortedBy { it.time.toMinutes() }
+        val list = sortedMapOfStops.values.toList()
         if ((stop.name != list[0].name && stop.name != list.last().name &&
                     (stop.time <= list[0].time || stop.time >= list.last().time)) ||
             (stop.name == list[0].name && stop.time >= list[1].time) ||
             (stop.name == list.last().name && stop.time <= list[list.size - 2].time)
         )
             throw IllegalArgumentException()
-        for (x in list) if (x != stop && x.time == stop.time) throw IllegalArgumentException()
+        val s = sortedMapOfStops[stop.time]
+        if (s != null && s != stop && s.time == stop.time
+        ) throw IllegalArgumentException()
     }
 
     fun sortedStops() = Train(name, stops.sortedBy { it.time.toMinutes() })
