@@ -145,14 +145,12 @@ data class Stop(val name: String, val time: Time) {
  * Поезд (имя, список остановок, упорядоченный по времени).
  * Первой идёт начальная остановка, последней конечная.
  */
-data class Train(val name: String, var stops: List<Stop>) {
-    constructor(name: String, vararg stops: Stop) : this(name, stops.asList())
+class Train(val name: String, vararg stops: Stop) {
 
     private val hashMapOfStops = HashMap(stops.associateBy { it.name })
     private val sortedMapOfStops = stops.associateBy { it.time }.toSortedMap()
 
     var depTime = sortedMapOfStops.values.first().time
-
 
     fun inChecker(stop: Stop) {
         val list = sortedMapOfStops.values.toList()
@@ -201,7 +199,7 @@ data class Train(val name: String, var stops: List<Stop>) {
 
     override fun hashCode(): Int {
         var result = name.hashCode()
-        result = 31 * result + stops.hashCode()
+        result = 31 * result + hashMapOfStops.hashCode()
         return result
     }
 
