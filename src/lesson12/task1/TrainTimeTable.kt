@@ -4,6 +4,7 @@ package lesson12.task1
 
 import ru.spbstu.wheels.asList
 import java.lang.IllegalArgumentException
+import java.util.TreeMap
 
 /**
  * Класс "расписание поездов".
@@ -148,16 +149,17 @@ data class Stop(val name: String, val time: Time) {
 class Train(val name: String, vararg stops: Stop) {
 
     private val hashMapOfStops = HashMap(stops.associateBy { it.name })
-    private val sortedMapOfStops = stops.associateBy { it.time }.toSortedMap()
+    private val sortedMapOfStops = TreeMap(stops.associateBy { it.time })
 
     var depTime = sortedMapOfStops.values.first().time
 
     fun inChecker(stop: Stop) {
-        val list = sortedMapOfStops.values.toList()
-        if ((stop.name != list[0].name && stop.name != list.last().name &&
-                    (stop.time <= list[0].time || stop.time >= list.last().time)) ||
-            (stop.name == list[0].name && stop.time >= list[1].time) ||
-            (stop.name == list.last().name && stop.time <= list[list.size - 2].time)
+        val first = sortedMapOfStops.firstEntry().value
+        val last = sortedMapOfStops.lastEntry().value
+        if ((stop.name != first.name && stop.name != last.name &&
+                    (stop.time <= first.time || stop.time >= last.time)) ||
+            (stop.name == first.name && stop.time >= sortedMapOfStops.higherEntry(first.time).value.time) ||
+            (stop.name == last.name && stop.time <= sortedMapOfStops.lowerEntry(last.time).value.time)
         )
             throw IllegalArgumentException()
         val s = sortedMapOfStops[stop.time]
